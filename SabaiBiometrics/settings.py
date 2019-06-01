@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Sabai_2019.urls'
+ROOT_URLCONF = 'SabaiBiometrics.urls'
 
 TEMPLATES = [
     {
