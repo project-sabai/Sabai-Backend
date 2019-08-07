@@ -17,10 +17,12 @@ from django.contrib import admin
 from django.urls import path
 from login import api as login
 from rest_framework_simplejwt import views as jwt_views
+import patient.api as patient
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login.HelloView.as_view()),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('patients/get_by_name', patient.get_patient_by_name, name='get_patient_by_name')
 ]
