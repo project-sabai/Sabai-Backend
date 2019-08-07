@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+import login
 
 class Patient(models.Model):
     class Meta:
@@ -16,7 +17,7 @@ class Patient(models.Model):
     parent = models.IntegerField(blank=True, null=True)
     face_encodings = models.CharField(max_length=3000)
 
-class Visits(models.Model):
+class Visit(models.Model):
     class Meta:
         db_table = "visits"
     id = models.IntegerField(primary_key=True)
@@ -28,7 +29,7 @@ class Vitals(models.Model):
     class Meta:
         db_table = "vitals"
     vitals_id = models.IntegerField(primary_key=True, default=0)
-    visit = models.ForeignKey(Visits, on_delete=models.CASCADE)
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
     height = models.DecimalField(decimal_places=2, max_digits=5, default=0)
     weight = models.DecimalField(decimal_places=2, max_digits=5, default=0)
     systolic = models.IntegerField(default=0)
@@ -38,3 +39,26 @@ class Vitals(models.Model):
     ptb_positive = models.BooleanField(default=False)
     hepc_positive = models.BooleanField(default=False)
     heart_rate = models.IntegerField(default=0)
+
+class Postreferral(models.Model):
+    class Meta:
+        db_table="postreferrals"
+    postreferral_id = models.IntegerField(primary_key=True)
+    visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=datetime.now())
+    recorder = models.CharField(max_length=255)
+    remarks = models.TextField()
+
+class Consult(models.Model):
+    class Meta:
+        db_table="consults"
+    consult_id = models.IntegerField(primary_key=True)
+    visit_id = models.IntegerField(primary_key=True)
+    date = models.DateTimeField(default=datetime.now())
+    doctor = models.ForeignKey(login.User, on_delete=models.CASCADE())
+    notes = models.TextField()
+    diagnosis = models.TextField()
+    problems = models.TextField()
+    urine_test = models.TextField()
+    hemocue_count = models.DecimalField(decimal_places=2, max_digits=5, default=0)
+    blood_glucose = models.DecimalField(decimal_places=2, max_digits=5, default=0)
