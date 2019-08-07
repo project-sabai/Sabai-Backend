@@ -7,7 +7,6 @@ class Patient(models.Model):
     class Meta:
         db_table = "patients"
 
-    id = models.IntegerField(primary_key=True)
     village_prefix = models.CharField(max_length=5)
     name = models.CharField(max_length=255)
     image = models.CharField(max_length=255)
@@ -18,14 +17,13 @@ class Patient(models.Model):
     drug_allergy = models.TextField(default="None")
     parent = models.IntegerField(blank=True, null=True)
     face_encodings = models.CharField(max_length=3000)
-    picture_blob = models.BinaryField(blank=True, null=True)
+    picture_blob = models.BinaryField(blank=True, null=True, editable=True)
 
 
 class Fingerprint(models.Model):
     class Meta:
         db_table = "fingerprints"
 
-    id = models.IntegerField(primary_key=True)
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
     fg_value = models.BinaryField(blank=True, null=True)
     size = models.IntegerField(blank=True, null=True)
@@ -36,7 +34,6 @@ class Visit(models.Model):
     class Meta:
         db_table = "visits"
 
-    id = models.IntegerField(primary_key=True)
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now())
     status = models.CharField(max_length=100)
@@ -46,7 +43,6 @@ class Vitals(models.Model):
     class Meta:
         db_table = "vitals"
 
-    vitals_id = models.IntegerField(primary_key=True, default=0)
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
     height = models.DecimalField(decimal_places=2, max_digits=5, default=0)
     weight = models.DecimalField(decimal_places=2, max_digits=5, default=0)
@@ -63,7 +59,6 @@ class Postreferral(models.Model):
     class Meta:
         db_table = "postreferrals"
 
-    postreferral_id = models.IntegerField(primary_key=True)
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now())
     recorder = models.CharField(max_length=255)
@@ -74,7 +69,6 @@ class Consult(models.Model):
     class Meta:
         db_table = "consults"
 
-    consult_id = models.IntegerField(primary_key=True)
     visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now())
     doctor = models.ForeignKey(login.User, on_delete=models.CASCADE)
