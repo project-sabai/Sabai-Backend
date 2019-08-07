@@ -1,5 +1,7 @@
+import io
+
 from clinicmodels.models import Patient
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core import serializers
@@ -28,9 +30,28 @@ def get_patient_by_id(request):
         return JsonResponse({})
 
 
+def get_patient_image_by_id(request):
+    patient_id = request.GET['id']
+
+    try:
+        ##todo: make this work
+        return JsonResponse({})
+        patient = Patient.objects.filter(id=patient_id)[0]
+        binary = patient.picture_blob
+        binary_io = io.BytesIO(binary)
+        print(binary_io.__sizeof__())
+        response = FileResponse(binary_io)
+        response['Content-Type'] = 'application/x-binary'
+        return response
+
+    except MultiValueDictKeyError:
+        return JsonResponse({})
+
+
 @csrf_exempt
 def create_new_patient(request):
-    form = PatientForm(request.POST, auto_id=True)
+    form = PatientForm(request.POST, request.FILES)
+    print(form)
     if form.is_valid():
         print("great!")
         print(form)

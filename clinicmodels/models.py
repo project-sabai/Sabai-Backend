@@ -17,7 +17,7 @@ class Patient(models.Model):
     drug_allergy = models.TextField(default="None")
     parent = models.IntegerField(blank=True, null=True)
     face_encodings = models.CharField(max_length=3000)
-    picture_blob = models.BinaryField(blank=True, null=True, editable=True)
+    picture_blob = models.ImageField()
 
 
 class Fingerprint(models.Model):
