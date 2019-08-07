@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a6aa1dc-578f-4aa7-92d1-b80075fafcb7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/clinicmodels/migrations/0006_auto_20190807_1243.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/clinicmodels/migrations/0007_auto_20190807_1247.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clinicmodels/migrations/0008_auto_20190807_1655.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clinicmodels/migrations/0009_auto_20190807_1657.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clinicmodels/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/clinicmodels/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/login/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/login/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabaibiometrics/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sabaibiometrics/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -121,6 +121,7 @@
       <workItem from="1564854042152" duration="357000" />
       <workItem from="1564936943004" duration="498000" />
       <workItem from="1565147162457" duration="7196000" />
+      <workItem from="1565167287442" duration="974000" />
     </task>
     <task id="LOCAL-00001" summary="Init">
       <created>1559366182174</created>

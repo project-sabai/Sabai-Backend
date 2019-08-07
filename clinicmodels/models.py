@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-import login
+from login import models as login
 
 class Patient(models.Model):
     class Meta:
@@ -44,7 +44,7 @@ class Postreferral(models.Model):
     class Meta:
         db_table="postreferrals"
     postreferral_id = models.IntegerField(primary_key=True)
-    visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now())
     recorder = models.CharField(max_length=255)
     remarks = models.TextField()
@@ -53,9 +53,9 @@ class Consult(models.Model):
     class Meta:
         db_table="consults"
     consult_id = models.IntegerField(primary_key=True)
-    visit_id = models.IntegerField(primary_key=True)
+    visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now())
-    doctor = models.ForeignKey(login.User, on_delete=models.CASCADE())
+    doctor = models.ForeignKey(login.User, on_delete=models.CASCADE)
     notes = models.TextField()
     diagnosis = models.TextField()
     problems = models.TextField()
