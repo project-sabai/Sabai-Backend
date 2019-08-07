@@ -22,8 +22,12 @@ import patient.api as patient
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login.HelloView.as_view()),
+    #JWT Token Endpoints
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('patients/get_by_name', patient.get_patient_by_name, name='get_patient_by_name'),
+
+    #Patient Creation/Retrieval Endpoints
+    path('patients/patient_by_name', patient.get_patient_by_name, name='get_patient_by_name'),
+    path('patients/patient_by_id', patient.get_patient_by_id, name='get_patient_by_id'),
     path('patients/new_patient', patient.create_new_patient, name='new_patient')
 ]
