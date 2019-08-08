@@ -1,5 +1,5 @@
 from django.db import models
-from login import models as login
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 
@@ -70,7 +70,7 @@ class Consult(models.Model):
 
     visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
-    doctor = models.ForeignKey(login.User, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True)
     diagnosis = models.TextField(blank=True, null=True)
     problems = models.TextField(blank=True, null=True)

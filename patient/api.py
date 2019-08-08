@@ -57,7 +57,7 @@ def get_patient_image_by_id(request):
         patient_id = request.GET['id']
         patient = Patient.objects.get(pk=patient_id)
         image = patient.picture
-        if "jpeg" in image.name.lower():
+        if "jpeg" in image.name.lower() or "jpg" in image.name.lower():
             return HttpResponse(image.file.read(), content_type="image/jpeg")
         elif "png" in image.name.lower():
             return HttpResponse(image.file.read(), content_type="image/png")
@@ -107,5 +107,5 @@ def update_patient(request):
         except ObjectDoesNotExist as e:
             return JsonResponse({"message": str(e)}, status=404)
 
-    except MultiValueDictKeyError as e:
+    except MultiValueDictKeyError:
         return JsonResponse({"message": "Could not find parameter: id"}, status=400)
