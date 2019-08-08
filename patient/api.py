@@ -17,6 +17,13 @@ Handles all operations regarding the retrieval, update of patient models.
 
 
 @api_view(['GET'])
+def get_all_patients(request):
+    patients = Patient.objects.all()
+    response = serializers.serialize("json", patients)
+    return HttpResponse(response, content_type="application/json")
+
+
+@api_view(['GET'])
 # @permission_classes((IsAuthenticated,))
 def get_patient_by_name(request):
     """

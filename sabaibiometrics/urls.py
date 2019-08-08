@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
     # Patient Creation/Retrieval Endpoints
+    path('patients/all', patient.get_all_patients, name='get_all_patients'),
     path('patients/by_name', patient.get_patient_by_name, name='get_patient_by_name'),
     path('patients/by_id', patient.get_patient_by_id, name='get_patient_by_id'),
     path('patients/new', patient.create_new_patient, name='new_patient'),
