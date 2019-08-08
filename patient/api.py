@@ -1,7 +1,7 @@
 import io
 
 from clinicmodels.models import Patient
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core import serializers
@@ -35,6 +35,7 @@ def get_patient_image_by_id(request):
     try:
         patient = Patient.objects.filter(id=patient_id)[0]
         binary = patient.picture_blob.file
+        print(binary.name)
         binary_io = io.BytesIO(binary.read())
         print(binary_io.__sizeof__())
         response = FileResponse(binary_io)
