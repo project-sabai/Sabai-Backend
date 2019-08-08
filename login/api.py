@@ -9,3 +9,7 @@ class HelloView(APIView):
     def get(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
+
+    def post(self, request):
+        if not request.data:
+            return Response({"message": "Please provide username and password"}, status='400')

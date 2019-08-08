@@ -6,12 +6,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 from clinicmodels.models import Patient
 from patient.forms import PatientForm
+from django.contrib.auth.models import User
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes, api_view
 
 """
 Handles all operations regarding the retrieval, update of patient models.
 """
 
 
+@api_view(['GET'])
+# @permission_classes((IsAuthenticated,))
 def get_patient_by_name(request):
     """
     GET patient by name
@@ -19,6 +25,9 @@ def get_patient_by_name(request):
     :return: JSON Response with an array of users matching name
     """
     try:
+        # user = User.objects.get(username=request.user)
+        # print(user.email)
+
         patient_name = request.GET['name']
         patient = Patient.objects.filter(name__contains=patient_name)
         response = serializers.serialize("json", patient)
@@ -29,6 +38,7 @@ def get_patient_by_name(request):
         return JsonResponse({"message": str(e)}, status=404)
 
 
+@api_view(['GET'])
 def get_patient_by_id(request):
     '''
     GET patient identified by id
@@ -47,6 +57,7 @@ def get_patient_by_id(request):
         return JsonResponse({"message": str(e)}, status=404)
 
 
+@api_view(['GET'])
 def get_patient_image_by_id(request):
     '''
     GET image of patient by id
@@ -69,6 +80,7 @@ def get_patient_image_by_id(request):
         return JsonResponse({"message": str(e)}, status=404)
 
 
+@api_view(['POST'])
 @csrf_exempt
 def create_new_patient(request):
     '''
@@ -86,6 +98,7 @@ def create_new_patient(request):
         return JsonResponse(form.errors, status=400)
 
 
+@api_view(['POST'])
 @csrf_exempt
 def update_patient(request):
     '''
