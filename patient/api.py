@@ -49,12 +49,13 @@ def get_patient_image_by_id(request):
     patient_id = request.GET['id']
     try:
         patient = Patient.objects.filter(id=patient_id)[0]
-        binary = patient.picture.file
-        binary_io = io.BytesIO(binary.read())
-        response = FileResponse(binary_io)
-        response['Content-Type'] = 'application/x-binary'
-        binary.close()
-        return response
+        image = patient.picture
+        if "jpeg" in image.name.lower():
+            return HttpResponse(image.file.read(), content_type="image/jpeg")
+        elif "png" in image.name.lower():
+            return HttpResponse(image.file.read(), content_type="image/png")
+        else:
+            return JsonResponse({"message": "Patient image is in the wrong format"}, status=400)
     except (MultiValueDictKeyError, IndexError) as e:
         return JsonResponse({"message": "Patient image does not exist"}, status=404)
 
