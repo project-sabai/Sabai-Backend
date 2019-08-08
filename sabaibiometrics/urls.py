@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
+from visit import api as visit
 from login import api as login
 from rest_framework_simplejwt import views as jwt_views
 import patient.api as patient
@@ -27,9 +29,11 @@ urlpatterns = [
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
     #Patient Creation/Retrieval Endpoints
-    path('patients/patient_by_name', patient.get_patient_by_name, name='get_patient_by_name'),
-    path('patients/patient_by_id', patient.get_patient_by_id, name='get_patient_by_id'),
-    path('patients/new_patient', patient.create_new_patient, name='new_patient'),
+    path('patients/by_name', patient.get_patient_by_name, name='get_patient_by_name'),
+    path('patients/by_id', patient.get_patient_by_id, name='get_patient_by_id'),
+    path('patients/new', patient.create_new_patient, name='new_patient'),
     path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image'),
-    path('patients/update_by_id', patient.update_patient, name='patient_update')
+    path('patients/update_by_id', patient.update_patient, name='patient_update'),
+
+    path('visit/create_new', visit.create_new_visit, name='create_visit')
 ]

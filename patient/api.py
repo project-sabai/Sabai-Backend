@@ -1,11 +1,10 @@
-import io
+from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse, HttpResponse
+from django.utils.datastructures import MultiValueDictKeyError
+from django.views.decorators.csrf import csrf_exempt
 
 from clinicmodels.models import Patient
-from django.http import JsonResponse, HttpResponse, FileResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.datastructures import MultiValueDictKeyError
-from django.core import serializers
-
 from patient.forms import PatientForm
 
 """
@@ -19,13 +18,15 @@ def get_patient_by_name(request):
     :param request: GET request with a name parameter
     :return: JSON Response with an array of users matching name
     """
-    patient_name = request.GET['name']
-
     try:
-        patient = Patient.objects.get(name=patient_name)
-        return JsonResponse(list(patient.values))
-    except (MultiValueDictKeyError, IndexError):
-        return JsonResponse({"message": "Patient not found"}, status=404)
+        patient_name = request.GET['name']
+        patient = Patient.objects.filter(name__contains=patient_name)
+        response = serializers.serialize("json", patient)
+        return HttpResponse(response, content_type='application/json')
+    except MultiValueDictKeyError:
+        return JsonResponse({"message": "GET: parameter 'name' not found"}, status=404)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
 
 
 def get_patient_by_id(request):
@@ -34,14 +35,16 @@ def get_patient_by_id(request):
     :param request: GET request with an id parameter
     :return: JSON Response with an array of users mathing id
     '''
-    patient_id = request.GET['id']
 
     try:
+        patient_id = request.GET['id']
         patient = Patient.objects.filter(id=patient_id)
         response = serializers.serialize("json", patient)
         return HttpResponse(response, content_type='application/json')
-    except (MultiValueDictKeyError, IndexError):
-        return JsonResponse({"message": "Patient not found"}, status=404)
+    except MultiValueDictKeyError:
+        return JsonResponse({"message": "GET: parameter 'id' not found"}, status=404)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
 
 
 def get_patient_image_by_id(request):
@@ -50,9 +53,9 @@ def get_patient_image_by_id(request):
     :param request: GET with parameter id of patient you want the image of
     :return: FileResponse if image is found, 404 if not
     '''
-    patient_id = request.GET['id']
     try:
-        patient = Patient.objects.filter(id=patient_id)[0]
+        patient_id = request.GET['id']
+        patient = Patient.objects.get(pk=patient_id)
         image = patient.picture
         if "jpeg" in image.name.lower():
             return HttpResponse(image.file.read(), content_type="image/jpeg")
@@ -60,8 +63,10 @@ def get_patient_image_by_id(request):
             return HttpResponse(image.file.read(), content_type="image/png")
         else:
             return JsonResponse({"message": "Patient image is in the wrong format"}, status=400)
-    except (MultiValueDictKeyError, IndexError) as e:
-        return JsonResponse({"message": "Patient image does not exist"}, status=404)
+    except MultiValueDictKeyError:
+        return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
 
 
 @csrf_exempt
@@ -90,13 +95,17 @@ def update_patient(request):
     '''
     try:
         patient_id = request.POST['id']
-        patient = Patient.objects.get(pk=patient_id)
-        form = PatientForm(request.POST, request.FILES, instance=patient)
-        if form.is_valid():
-            edited = form.save()
-            response = serializers.serialize("json", [edited, ])
-            return HttpResponse(response, content_type="application/json")
-        else:
-            return JsonResponse(form.errors, status=400)
+        try:
+            patient = Patient.objects.get(pk=patient_id)
+            form = PatientForm(request.POST, request.FILES, instance=patient)
+            if form.is_valid():
+                edited = form.save()
+                response = serializers.serialize("json", [edited, ])
+                return HttpResponse(response, content_type="application/json")
+            else:
+                return JsonResponse(form.errors, status=400)
+        except ObjectDoesNotExist as e:
+            return JsonResponse({"message": str(e)}, status=404)
+
     except MultiValueDictKeyError as e:
         return JsonResponse({"message": "Could not find parameter: id"}, status=400)
