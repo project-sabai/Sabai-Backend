@@ -23,7 +23,7 @@ class Fingerprint(models.Model):
     class Meta:
         db_table = "fingerprints"
 
-    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     fg_value = models.BinaryField(blank=True, null=True)
     size = models.IntegerField(blank=True, null=True)
     fg_image = models.BinaryField(blank=True, null=True)
@@ -33,7 +33,7 @@ class Visit(models.Model):
     class Meta:
         db_table = "visits"
 
-    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=100)
 
@@ -68,7 +68,7 @@ class Consult(models.Model):
     class Meta:
         db_table = "consults"
 
-    visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
+    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
     doctor = models.ForeignKey(User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True)

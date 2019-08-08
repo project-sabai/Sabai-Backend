@@ -33,7 +33,7 @@ def get_patient_by_name(request):
         response = serializers.serialize("json", patient)
         return HttpResponse(response, content_type='application/json')
     except MultiValueDictKeyError:
-        return JsonResponse({"message": "GET: parameter 'name' not found"}, status=404)
+        return JsonResponse({"message": "GET: parameter 'name' not found"}, status=400)
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
 
@@ -52,7 +52,7 @@ def get_patient_by_id(request):
         response = serializers.serialize("json", patient)
         return HttpResponse(response, content_type='application/json')
     except MultiValueDictKeyError:
-        return JsonResponse({"message": "GET: parameter 'id' not found"}, status=404)
+        return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
 
