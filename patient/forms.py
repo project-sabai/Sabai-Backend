@@ -7,5 +7,5 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['village_prefix', 'name',
                   'contact_no', 'gender', 'travelling_time_to_village',
-                  'date_of_birth', 'drug_allergy', 'parent', 'face_encodings', 'picture_blob']
+                  'date_of_birth', 'drug_allergy', 'parent', 'face_encodings', 'picture']
 

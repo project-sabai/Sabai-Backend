@@ -43,10 +43,15 @@ def get_patient_by_id(request):
 
 
 def get_patient_image_by_id(request):
+    '''
+    GET image of patient by id
+    :param request: GET with parameter id of patient you want the image of
+    :return: FileResponse if image is found, 404 if not
+    '''
     patient_id = request.GET['id']
     try:
         patient = Patient.objects.filter(id=patient_id)[0]
-        binary = patient.picture_blob.file
+        binary = patient.picture.file
         binary_io = io.BytesIO(binary.read())
         response = FileResponse(binary_io)
         response['Content-Type'] = 'application/x-binary'
