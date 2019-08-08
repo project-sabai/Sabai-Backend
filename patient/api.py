@@ -32,19 +32,18 @@ def get_patient_by_id(request):
 
 def get_patient_image_by_id(request):
     patient_id = request.GET['id']
-
     try:
-        ##todo: make this work
-        return JsonResponse({})
         patient = Patient.objects.filter(id=patient_id)[0]
-        binary = patient.picture_blob
-        binary_io = io.BytesIO(binary)
+        binary = patient.picture_blob.file
+        binary_io = io.BytesIO(binary.read())
         print(binary_io.__sizeof__())
         response = FileResponse(binary_io)
         response['Content-Type'] = 'application/x-binary'
+        binary.close()
         return response
 
-    except MultiValueDictKeyError:
+    except MultiValueDictKeyError as e:
+        print(e)
         return JsonResponse({})
 
 
