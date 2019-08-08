@@ -20,8 +20,8 @@ def get_patient_by_name(request):
     try:
         patient = Patient.objects.get(name=patient_name)
         return JsonResponse(list(patient.values))
-    except MultiValueDictKeyError:
-        return JsonResponse({})
+    except (MultiValueDictKeyError, IndexError):
+        return JsonResponse({"message": "Patient not found"}, status=404)
 
 
 def get_patient_by_id(request):
@@ -36,10 +36,8 @@ def get_patient_by_id(request):
         patient = Patient.objects.filter(id=patient_id)
         response = serializers.serialize("json", patient)
         return HttpResponse(response, content_type='application/json')
-    except MultiValueDictKeyError:
-        raise Http404("Patient not found")
-    except IndexError:
-        raise Http404("Patient not found")
+    except (MultiValueDictKeyError, IndexError):
+        return JsonResponse({"message": "Patient not found"}, status=404)
 
 
 def get_patient_image_by_id(request):
@@ -57,10 +55,8 @@ def get_patient_image_by_id(request):
         response['Content-Type'] = 'application/x-binary'
         binary.close()
         return response
-    except MultiValueDictKeyError as e:
-        raise Http404("Patient image does not exist")
-    except IndexError as e:
-        raise Http404("Patient image does not exist")
+    except (MultiValueDictKeyError, IndexError) as e:
+        return JsonResponse({"message": "Patient image does not exist"}, status=404)
 
 
 @csrf_exempt
@@ -71,12 +67,10 @@ def create_new_patient(request):
     :return: Http Response with corresponding status code
     '''
     form = PatientForm(request.POST, request.FILES)
-    print(form)
     if form.is_valid():
-        print("great!")
-        print(form)
         patient = form.save(commit=False)
         patient.save()
-        return HttpResponse(status=200)
+        response = serializers.serialize("json", [patient, ])
+        return HttpResponse(response, content_type="application/json")
     else:
-        return HttpResponse(status=400)
+        return JsonResponse({"message": "Malformed form, please check your fields"}, status=400)
