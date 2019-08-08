@@ -81,3 +81,23 @@ class Consult(models.Model):
     chronic_referral = models.BooleanField(blank=True, null=True)
     addendum = models.TextField(blank=True, null=True)
 
+
+class Medication(models.Model):
+    class Meta:
+        db_table = "medication"
+
+    medicine_name = models.CharField(max_length=255)
+    quantity = models.IntegerField(default=0)
+    notes = models.TextField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+
+
+class Order(models.Model):
+    class Meta:
+        db_table = "order"
+
+    medicine = models.ForeignKey(Medication, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    consult = models.ForeignKey(Consult, on_delete=models.CASCADE, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
