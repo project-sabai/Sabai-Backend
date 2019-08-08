@@ -1,6 +1,6 @@
 from django.db import models
-from datetime import datetime
 from login import models as login
+from django.utils import timezone
 
 
 class Patient(models.Model):
@@ -12,7 +12,7 @@ class Patient(models.Model):
     contact_no = models.CharField(max_length=255)
     gender = models.CharField(max_length=6)
     travelling_time_to_village = models.IntegerField(default=0)
-    date_of_birth = models.CharField(max_length=10)
+    date_of_birth = models.DateField(default=timezone.now)
     drug_allergy = models.TextField(default="None")
     parent = models.IntegerField(blank=True, null=True)
     face_encodings = models.CharField(max_length=3000)
@@ -34,7 +34,7 @@ class Visit(models.Model):
         db_table = "visits"
 
     patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=100)
 
 
@@ -59,7 +59,7 @@ class Postreferral(models.Model):
         db_table = "postreferrals"
 
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=timezone.now)
     recorder = models.CharField(max_length=255)
     remarks = models.TextField(blank=True, null=True)
 
@@ -69,7 +69,7 @@ class Consult(models.Model):
         db_table = "consults"
 
     visit_id = models.ForeignKey(Visit, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now())
+    date = models.DateTimeField(default=timezone.now)
     doctor = models.ForeignKey(login.User, on_delete=models.CASCADE)
     notes = models.TextField(blank=True, null=True)
     diagnosis = models.TextField(blank=True, null=True)

@@ -30,5 +30,6 @@ urlpatterns = [
     path('patients/patient_by_name', patient.get_patient_by_name, name='get_patient_by_name'),
     path('patients/patient_by_id', patient.get_patient_by_id, name='get_patient_by_id'),
     path('patients/new_patient', patient.create_new_patient, name='new_patient'),
-    path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image')
+    path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image'),
+    path('patients/update_by_id', patient.update_patient, name='patient_update')
 ]

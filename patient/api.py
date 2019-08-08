@@ -8,6 +8,10 @@ from django.core import serializers
 
 from patient.forms import PatientForm
 
+"""
+Handles all operations regarding the retrieval, update of patient models.
+"""
+
 
 def get_patient_by_name(request):
     """
@@ -64,7 +68,7 @@ def get_patient_image_by_id(request):
 def create_new_patient(request):
     '''
     POST request with multipart form to create a new patient
-    :param request: POST request with the required parameters
+    :param request: POST request with the required parameters. Date parameters are accepted in the format 1995-03-30.
     :return: Http Response with corresponding status code
     '''
     form = PatientForm(request.POST, request.FILES)
@@ -74,4 +78,25 @@ def create_new_patient(request):
         response = serializers.serialize("json", [patient, ])
         return HttpResponse(response, content_type="application/json")
     else:
-        return JsonResponse({"message": "Malformed form, please check your fields"}, status=400)
+        return JsonResponse(form.errors, status=400)
+
+
+@csrf_exempt
+def update_patient(request):
+    '''
+    Update patient data based on the parameters
+    :param request: POST with data
+    :return: JSON Response with new data, or error
+    '''
+    try:
+        patient_id = request.POST['id']
+        patient = Patient.objects.get(pk=patient_id)
+        form = PatientForm(request.POST, request.FILES, instance=patient)
+        if form.is_valid():
+            edited = form.save()
+            response = serializers.serialize("json", [edited, ])
+            return HttpResponse(response, content_type="application/json")
+        else:
+            return JsonResponse(form.errors, status=400)
+    except MultiValueDictKeyError as e:
+        return JsonResponse({"message": "Could not find parameter: id"}, status=400)
