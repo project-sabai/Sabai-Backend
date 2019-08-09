@@ -41,6 +41,8 @@ def get_visit_by_id(request):
         return HttpResponse(response, content_type="application/json")
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -56,6 +58,8 @@ def get_visit_by_patient(request):
         return HttpResponse(response, content_type="application/json")
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -71,3 +75,22 @@ def get_visit_by_status(request):
         return HttpResponse(response, content_type="application/json")
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
+
+@api_view(['GET'])
+def get_visit_by_patient_and_status(request):
+    try:
+        if 'status' not in request.GET and 'patient' not in request.GET:
+            return JsonResponse({"message": "GET: parameter 'status' or 'patient' not found"}, status=400)
+        status = request.GET['status']
+        patient = request.GET['patient']
+        visit = Visit.objects.filter(status=status, patient=patient)
+        if visit.count() == 0:
+            return JsonResponse({"message": "Visit matching query does not exist"}, status=404)
+        response = serializers.serialize("json", visit)
+        return HttpResponse(response, content_type="application/json")
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)

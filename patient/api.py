@@ -45,6 +45,8 @@ def get_patient_by_name(request):
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -64,6 +66,8 @@ def get_patient_by_id(request):
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['GET'])
@@ -87,6 +91,8 @@ def get_patient_image_by_id(request):
             return JsonResponse({"message": "Patient image is in the wrong format"}, status=400)
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['POST'])
