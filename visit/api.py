@@ -43,3 +43,29 @@ def get_visit_by_id(request):
         return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
+
+
+@api_view(['GET'])
+def get_visit_by_patient(request):
+    try:
+        patient_id = request.GET['patient_id']
+        visits = Visit.objects.filter(patient=patient_id)
+        response = serializers.serialize("json", visits)
+        return HttpResponse(response, content_type="application/json")
+    except MultiValueDictKeyError:
+        return JsonResponse({"message": "GET: parameter 'patient_id' not found"}, status=400)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
+
+
+@api_view(['GET'])
+def get_visit_by_status(request):
+    try:
+        status = request.GET['status']
+        visits = Visit.objects.filter(status=status)
+        response = serializers.serialize("json", visits)
+        return HttpResponse(response, content_type="application/json")
+    except MultiValueDictKeyError:
+        return JsonResponse({"message": "GET: parameter 'status' not found"}, status=400)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)

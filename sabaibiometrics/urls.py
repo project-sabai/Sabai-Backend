@@ -39,5 +39,7 @@ urlpatterns = [
 
     # Patient Visit Creation/Retrieval Endpoints
     path('visit/new', visit.create_new_visit, name='create_visit'),
-    path('visit/by_id', visit.get_visit_by_id, name='get_visit_by_id')
+    path('visit/by_id', visit.get_visit_by_id, name='get_visit_by_id'),
+    path('visit/by_patient', visit.get_visit_by_patient, name='get_visit_by_patient'),
+    path('visit/by_status', visit.get_visit_by_status, name='get_visit_by_status')
 ]
