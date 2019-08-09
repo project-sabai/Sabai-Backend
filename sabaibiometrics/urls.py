@@ -46,5 +46,8 @@ urlpatterns = [
     path('visit/by_patient_and_status', visit.get_visit_by_patient_and_status, name='get_visit_by_patient_and_status'),
 
     # Vitals Creation/Retrieval Endpoints
-    path('vitals/new', vitals.create_new_vitals, name='create_vitals')
+    path('vitals/new', vitals.create_new_vitals, name='create_vitals'),
+    path('vitals/by_id', vitals.get_vitals_by_id, name='get_vitals_by_id'),
+    path('vitals/by_visit', vitals.get_vitals_by_visit, name='get_vitals_by_visit'),
+    path('vitals/by_patient', vitals.get_vitals_by_patient, name='get_vitals_by_patient')
 ]
