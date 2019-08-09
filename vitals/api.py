@@ -15,9 +15,9 @@ def create_new_vitals(request):
         if form.is_valid():
             vitals = form.save(commit=False)
             vitals.save()
-            response = serializers.serialize("json", [vitals,])
+            response = serializers.serialize("json", [vitals, ])
             return HttpResponse(response, content_type="application/json")
         else:
             return JsonResponse(form.errors, status=400)
     except DataError as e:
-        return JsonResponse({"message": str(e)},status=400)
+        return JsonResponse({"message": str(e)}, status=400)

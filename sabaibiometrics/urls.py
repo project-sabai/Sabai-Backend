@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from vitals import api as vitals
 from visit import api as visit
 from login import api as login
 from rest_framework_simplejwt import views as jwt_views
@@ -42,5 +43,8 @@ urlpatterns = [
     path('visit/by_id', visit.get_visit_by_id, name='get_visit_by_id'),
     path('visit/by_patient', visit.get_visit_by_patient, name='get_visit_by_patient'),
     path('visit/by_status', visit.get_visit_by_status, name='get_visit_by_status'),
-    path('visit/by_patient_and_status', visit.get_visit_by_patient_and_status, name='get_visit_by_patient_and_status')
+    path('visit/by_patient_and_status', visit.get_visit_by_patient_and_status, name='get_visit_by_patient_and_status'),
+
+    # Vitals Creation/Retrieval Endpoints
+    path('vitals/new', vitals.create_new_vitals, name='create_vitals')
 ]
