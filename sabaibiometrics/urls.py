@@ -40,6 +40,7 @@ urlpatterns = [
 
     # Patient Visit Creation/Retrieval Endpoints
     path('visit/new', visit.create_new_visit, name='create_visit'),
+    path('visit/update_by_id', visit.update_visit, name='update_visit_by_id'),
     path('visit/by_id', visit.get_visit_by_id, name='get_visit_by_id'),
     path('visit/by_patient', visit.get_visit_by_patient, name='get_visit_by_patient'),
     path('visit/by_status', visit.get_visit_by_status, name='get_visit_by_status'),
@@ -47,6 +48,7 @@ urlpatterns = [
 
     # Vitals Creation/Retrieval Endpoints
     path('vitals/new', vitals.create_new_vitals, name='create_vitals'),
+    path('vitals/update_by_id', vitals.update_vitals, name='update_vitals_by_id'),
     path('vitals/by_id', vitals.get_vitals_by_id, name='get_vitals_by_id'),
     path('vitals/by_visit', vitals.get_vitals_by_visit, name='get_vitals_by_visit'),
     path('vitals/by_patient', vitals.get_vitals_by_patient, name='get_vitals_by_patient')

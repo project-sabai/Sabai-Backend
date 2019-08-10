@@ -1,5 +1,6 @@
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DataError
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
@@ -27,6 +28,27 @@ def create_new_visit(request):
         else:
             return JsonResponse(visit_form.errors, status=400)
     except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def update_visit(request):
+    try:
+        if 'id' not in request.POST:
+            return JsonResponse({"message": "POST: parameter 'id' not found"}, status=400)
+        visit_id = request.POST['id']
+        visit = Visit.objects.get(pk=visit_id)
+        if 'status' in request.POST:
+            visit.status = request.POST['status']
+        visit.save()
+        response = serializers.serialize("json", [visit,])
+        return HttpResponse(response, content_type='application/json')
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message": str(e)}, status=404)
+    except DataError as e:
+        return JsonResponse({"message": str(e)}, status=404)
+    except ValueError as e:
         return JsonResponse({"message": str(e)}, status=404)
 
 
@@ -77,6 +99,7 @@ def get_visit_by_status(request):
         return JsonResponse({"message": str(e)}, status=404)
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=400)
+
 
 @api_view(['GET'])
 def get_visit_by_patient_and_status(request):
