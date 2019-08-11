@@ -80,6 +80,7 @@ class Consult(models.Model):
     referrals = models.TextField(blank=True, null=True)
     chronic_referral = models.BooleanField(blank=True, null=True)
     addendum = models.TextField(blank=True, null=True)
+    addendum_time = models.DateTimeField(blank=True, null=True)
 
 
 class Medication(models.Model):
