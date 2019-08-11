@@ -55,5 +55,9 @@ urlpatterns = [
     path('vitals/by_patient', vitals.get_vitals_by_patient, name='get_vitals_by_patient'),
 
     # Postreferral Creation/Retrieval Endpoints
-    path('postreferral/new', postreferral.create_new_postreferral, name='create_postreferral')
+    path('postreferral/new', postreferral.create_new_postreferral, name='create_postreferral'),
+    path('postreferral/update_by_id', postreferral.update_postreferral, name='update_postreferral_by_id'),
+    path('postreferral/by_id', postreferral.get_postreferral_by_id, name='get_postreferral_by_id'),
+    path('postreferral/by_visit', postreferral.get_postreferral_by_visit, name='get_postreferral_by_visit'),
+    path('postreferral/by_patient', postreferral.get_postreferral_by_patient, name='get_postreferral_by_patient')
 ]
