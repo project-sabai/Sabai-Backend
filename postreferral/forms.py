@@ -1,8 +1,8 @@
 from django import forms
-from clinicmodels.models import Postreferral
+from clinicmodels.models import PostReferral
 
 
 class PostreferralForm(forms.ModelForm):
     class Meta:
-        model = Postreferral
+        model = PostReferral
         fields = ['visit', 'recorder', 'remarks']

@@ -19,6 +19,7 @@ from django.urls import path
 from vitals import api as vitals
 from visit import api as visit
 from login import api as login
+from consult import api as consult
 from postreferral import api as postreferral
 from rest_framework_simplejwt import views as jwt_views
 import patient.api as patient
@@ -59,5 +60,10 @@ urlpatterns = [
     path('postreferral/update_by_id', postreferral.update_postreferral, name='update_postreferral_by_id'),
     path('postreferral/by_id', postreferral.get_postreferral_by_id, name='get_postreferral_by_id'),
     path('postreferral/by_visit', postreferral.get_postreferral_by_visit, name='get_postreferral_by_visit'),
-    path('postreferral/by_patient', postreferral.get_postreferral_by_patient, name='get_postreferral_by_patient')
+    path('postreferral/by_patient', postreferral.get_postreferral_by_patient, name='get_postreferral_by_patient'),
+
+    # Consult Creation/Retrieval Endpoints
+    path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
+    path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type')
+
 ]

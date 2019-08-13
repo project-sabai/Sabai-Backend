@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 
-from clinicmodels.models import Visit, Postreferral
+from clinicmodels.models import Visit, PostReferral
 from postreferral.forms import PostreferralForm
 
 
@@ -38,7 +38,7 @@ def update_postreferral(request):
         if 'id' not in request.POST:
             return JsonResponse({"message": "POST: parameter 'id' not found"}, status=400)
         postreferral_id = request.POST['id']
-        postreferral = Postreferral.objects.get(pk=postreferral_id)
+        postreferral = PostReferral.objects.get(pk=postreferral_id)
         if 'recorder' in request.POST:
             postreferral.recorder = request.POST['recorder']
         if 'remarks' in request.POST:
@@ -58,7 +58,7 @@ def get_postreferral_by_id(request):
         if 'id' not in request.GET:
             return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
         postreferral_id = request.GET['id']
-        postreferral = Postreferral.objects.get(pk=postreferral_id)
+        postreferral = PostReferral.objects.get(pk=postreferral_id)
         response = serializers.serialize("json", [postreferral, ])
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
@@ -73,7 +73,7 @@ def get_postreferral_by_visit(request):
         if 'visit_id' not in request.GET:
             return JsonResponse({"message": "GET: parameter 'visit_id' not found"}, status=400)
         visit_id = request.GET['visit_id']
-        postreferral = Postreferral.objects.filter(visit=visit_id)
+        postreferral = PostReferral.objects.filter(visit=visit_id)
         response = serializers.serialize("json", postreferral)
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
@@ -88,7 +88,7 @@ def get_postreferral_by_patient(request):
         if 'patient_id' not in request.GET:
             return JsonResponse({"message": "GET: parameter 'patient_id' not found"}, status=400)
         patient_id = request.GET['patient_id']
-        postreferral = Postreferral.objects.filter(visit__patient_id=patient_id)
+        postreferral = PostReferral.objects.filter(visit__patient_id=patient_id)
         response = serializers.serialize("json", postreferral)
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
