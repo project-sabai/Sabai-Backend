@@ -64,6 +64,7 @@ urlpatterns = [
 
     # Consult Creation/Retrieval Endpoints
     path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
-    path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type')
+    path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
+    path('consult/new', consult)
 
 ]

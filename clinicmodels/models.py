@@ -68,7 +68,7 @@ class ConsultType(models.Model):
     class Meta:
         db_table = 'consulttype'
 
-    type = models.CharField(max_length=255)
+    type = models.CharField(primary_key=True, max_length=255)
 
 
 class Consult(models.Model):
