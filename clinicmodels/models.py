@@ -93,7 +93,7 @@ class Consult(models.Model):
     addendum_time = models.DateTimeField(blank=True, null=True)
 
 
-class VisitConsults(models.Model):
+class VisitConsult(models.Model):
     class Meta:
         db_table = "visitconsults"
 

@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 
-from clinicmodels.models import Patient, Visit
+from clinicmodels.models import Patient, Visit, VisitConsult, ConsultType
 from visit.forms import VisitForm
 
 
@@ -13,6 +13,7 @@ from visit.forms import VisitForm
 @csrf_exempt
 def create_new_visit(request):
     try:
+        required_consults = request.POST.ge
         if 'patient' not in request.POST:
             return JsonResponse({"message": "POST: parameter 'patient' not found"}, status=400)
         patient_id = request.POST['patient']
@@ -23,6 +24,17 @@ def create_new_visit(request):
         visit_form = VisitForm(request.POST)
         if visit_form.is_valid():
             visit = visit_form.save()
+
+            if required_consults is not None:
+                print("size: " + len(required_consults))
+                for consult in required_consults:
+                    consult_type = ConsultType.objects.get(type=consult)
+                    visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
+                    visitconsult.save()
+            else:
+                consult_type = ConsultType.objects.all()[0]
+                visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
+                visitconsult.save()
             response = serializers.serialize("json", [visit, ])
             return HttpResponse(response, content_type='application/json')
         else:
@@ -42,7 +54,7 @@ def update_visit(request):
         if 'status' in request.POST:
             visit.status = request.POST['status']
         visit.save()
-        response = serializers.serialize("json", [visit,])
+        response = serializers.serialize("json", [visit, ])
         return HttpResponse(response, content_type='application/json')
     except ObjectDoesNotExist as e:
         return JsonResponse({"message": str(e)}, status=404)
