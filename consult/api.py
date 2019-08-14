@@ -48,17 +48,17 @@ def create_new_consult(request):
             return JsonResponse({"message": "POST: parameter 'visit' not found"}, status=400)
         if 'doctor' not in request.POST:
             return JsonResponse({"message": "POST: parameter 'doctor' not found"}, status=400)
-        if 'consulttype' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'consulttype' not found"}, status=400)
+        if 'consult_type' not in request.POST:
+            return JsonResponse({"message": "POST: parameter 'consult_type' not found"}, status=400)
         visit_id = request.POST['visit']
         doctor_id = request.POST['doctor']
-        consult_type_name = request.POST['consulttype']
+        consult_type_name = request.POST['consult_type']
         Visit.objects.get(pk=visit_id)
         User.objects.get(pk=doctor_id)
         consult_type = ConsultType.objects.get(type=consult_type_name)
 
         consult_form = ConsultForm(request.POST)
-        consult_form.consult_type = consult_type[0]
+        consult_form.consult_type = consult_type
         if consult_form.is_valid():
             consult = consult_form.save()
             response = serializers.serialize("json", [consult, ])
