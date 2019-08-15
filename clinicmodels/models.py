@@ -108,6 +108,7 @@ class Medication(models.Model):
         db_table = "medication"
 
     medicine_name = models.CharField(max_length=255)
+    reserve_quantity = models.IntegerField(default=0)
     quantity = models.IntegerField(default=0)
     notes = models.TextField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
@@ -122,3 +123,4 @@ class Order(models.Model):
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     remarks = models.TextField(blank=True, null=True)
+    order_status = models.CharField(max_length=255)
