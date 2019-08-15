@@ -76,6 +76,10 @@ def update_vitals(request):
         return JsonResponse({"message": str(e)}, status=400)
     except ValueError as e:
         return JsonResponse({"message": str(e)}, status=400)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"message", str(e)}, status=400)
+    except TypeError as e:
+        return JsonResponse({"message", str(e)}, status=400)
 
 
 @api_view(['GET'])

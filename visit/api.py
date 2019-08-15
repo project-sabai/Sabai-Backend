@@ -13,10 +13,12 @@ from visit.forms import VisitForm
 @csrf_exempt
 def create_new_visit(request):
     try:
-        required_consults = request.POST.ge
+        print(request.POST)
+        required_consults = request.POST.getlist('consult_required')
         if 'patient' not in request.POST:
             return JsonResponse({"message": "POST: parameter 'patient' not found"}, status=400)
         patient_id = request.POST['patient']
+        print(required_consults)
 
         # Patient exists, go on to create a new visit
         Patient.objects.get(pk=patient_id)
@@ -26,7 +28,7 @@ def create_new_visit(request):
             visit = visit_form.save()
 
             if required_consults is not None:
-                print("size: " + len(required_consults))
+                print("size: ", len(required_consults))
                 for consult in required_consults:
                     consult_type = ConsultType.objects.get(type=consult)
                     visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
