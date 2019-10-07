@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.postgres.fields import JSONField
 
 
 class Patient(models.Model):
@@ -37,11 +38,13 @@ class Visit(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=100)
+    medical_consultation = models.BooleanField(default=False)
+    dental_consultation = models.BooleanField(default=False)
 
 
-class Vitals(models.Model):
+class MedicalVitals(models.Model):
     class Meta:
-        db_table = "vitals"
+        db_table = "medicalVitals"
 
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, blank=True, null=True)
     height = models.DecimalField(decimal_places=2, max_digits=5, default=0)
@@ -54,6 +57,16 @@ class Vitals(models.Model):
     hepc_positive = models.BooleanField(default=False)
     heart_rate = models.IntegerField(default=0)
 
+class DentalVitals(models.Model):
+    class Meta:
+        db_table = "dentalVitals"
+    
+    visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, blank=True, null=True)
+    complaints = models.TextField(blank=True, null=True)
+    intraoral = models.TextField(blank=True, null=True)
+    diagnosis = models.TextField(blank=True, null=True)
+    others = models.TextField(blank=True, null=True)
+    referred_for = models.TextField(blank=True, null=True)
 
 class PostReferral(models.Model):
     class Meta:
@@ -65,11 +78,11 @@ class PostReferral(models.Model):
     remarks = models.TextField(blank=True, null=True)
 
 
-class ConsultType(models.Model):
-    class Meta:
-        db_table = 'consulttype'
+# class ConsultType(models.Model):
+#     class Meta:
+#         db_table = 'consulttype'
 
-    type = models.CharField(primary_key=True, max_length=255)
+    # type = models.CharField(primary_key=True, max_length=255)
 
 
 class Consult(models.Model):
@@ -77,8 +90,9 @@ class Consult(models.Model):
         db_table = "consults"
 
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, blank=True, null=True)
-    consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
+    # consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
+    type = models.CharField(max_length=255)
     doctor = models.ForeignKey(User, related_name='doctor_create', on_delete=models.SET_NULL, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     diagnosis = models.TextField(blank=True, null=True)
@@ -92,15 +106,16 @@ class Consult(models.Model):
     addendum_doctor = models.ForeignKey(User, related_name='doctor_addendum', on_delete=models.SET_NULL,
                                         blank=True, null=True)
     addendum_time = models.DateTimeField(blank=True, null=True)
+    treatments_done = models.TextField(blank=True, null=True)
 
 
-class VisitConsult(models.Model):
-    class Meta:
-        db_table = "visitconsults"
+# class VisitConsult(models.Model):
+#     class Meta:
+#         db_table = "visitconsults"
 
-    visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
-    consult = models.ForeignKey(Consult, on_delete=models.SET_NULL, blank=True, null=True)
-    consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
+#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
+#     consult = models.ForeignKey(Consult, on_delete=models.SET_NULL, blank=True, null=True)
+#     consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
 
 
 class Medication(models.Model):

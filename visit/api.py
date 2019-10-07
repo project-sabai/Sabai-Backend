@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 
-from clinicmodels.models import Patient, Visit, VisitConsult, ConsultType
+from clinicmodels.models import Patient, Visit
 from visit.forms import VisitForm
 
 
@@ -27,16 +27,16 @@ def create_new_visit(request):
         if visit_form.is_valid():
             visit = visit_form.save()
 
-            if required_consults is not None:
-                print("size: ", len(required_consults))
-                for consult in required_consults:
-                    consult_type = ConsultType.objects.get(type=consult)
-                    visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
-                    visitconsult.save()
-            else:
-                consult_type = ConsultType.objects.all()[0]
-                visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
-                visitconsult.save()
+            # if required_consults is not None:
+            #     print("size: ", len(required_consults))
+            #     for consult in required_consults:
+            #         consult_type = ConsultType.objects.get(type=consult)
+            #         visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
+            #         visitconsult.save()
+            # else:
+            #     consult_type = ConsultType.objects.all()[0]
+            #     visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
+            #     visitconsult.save()
             response = serializers.serialize("json", [visit, ])
             return HttpResponse(response, content_type='application/json')
         else:

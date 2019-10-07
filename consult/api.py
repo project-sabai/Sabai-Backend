@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 
-from clinicmodels.models import ConsultType, Visit
+from clinicmodels.models import Visit
 from consult.forms import ConsultForm
 
 
@@ -24,20 +24,20 @@ def get_all_consult_types(request):
         return JsonResponse({"message": str(e)}, status=400)
 
 
-@api_view(['POST'])
-def create_new_consult_type(request):
-    try:
-        if 'consult_type' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'consult_type' not found"}, status=400)
-        consult_type_field = request.POST['consult_type']
-        consulttype = ConsultType(type=consult_type_field)
-        consulttype.save()
-        response = serializers.serialize("json", [consulttype, ])
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+# @api_view(['POST'])
+# def create_new_consult_type(request):
+#     try:
+#         if 'consult_type' not in request.POST:
+#             return JsonResponse({"message": "POST: parameter 'consult_type' not found"}, status=400)
+#         consult_type_field = request.POST['consult_type']
+#         consulttype = ConsultType(type=consult_type_field)
+#         consulttype.save()
+#         response = serializers.serialize("json", [consulttype, ])
+#         return HttpResponse(response, content_type='application/json')
+#     except ObjectDoesNotExist as e:
+#         return JsonResponse({"message": str(e)}, status=404)
+#     except DataError as e:
+#         return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['POST'])
@@ -48,17 +48,17 @@ def create_new_consult(request):
             return JsonResponse({"message": "POST: parameter 'visit' not found"}, status=400)
         if 'doctor' not in request.POST:
             return JsonResponse({"message": "POST: parameter 'doctor' not found"}, status=400)
-        if 'consult_type' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'consult_type' not found"}, status=400)
+        if 'type' not in request.POST:
+            return JsonResponse({"message": "POST: parameter 'type' not found"}, status=400)
         visit_id = request.POST['visit']
         doctor_id = request.POST['doctor']
-        consult_type_name = request.POST['consult_type']
+        # consult_type_name = request.POST['consult_type']
         Visit.objects.get(pk=visit_id)
         User.objects.get(pk=doctor_id)
-        consult_type = ConsultType.objects.get(type=consult_type_name)
+        # consult_type = ConsultType.objects.get(type=consult_type_name)
 
         consult_form = ConsultForm(request.POST)
-        consult_form.consult_type = consult_type
+        # consult_form.consult_type = consult_type
         if consult_form.is_valid():
             consult = consult_form.save()
             response = serializers.serialize("json", [consult, ])

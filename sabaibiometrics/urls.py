@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from vitals import api as vitals
+from medicalvitals import api as medicalvitals
 from visit import api as visit
 from login import api as login
 from consult import api as consult
@@ -50,11 +50,11 @@ urlpatterns = [
     path('visit/by_patient_and_status', visit.get_visit_by_patient_and_status, name='get_visit_by_patient_and_status'),
 
     # Vitals Creation/Retrieval Endpoints
-    path('vitals/new', vitals.create_new_vitals, name='create_vitals'),
-    path('vitals/update_by_id', vitals.update_vitals, name='update_vitals_by_id'),
-    path('vitals/by_id', vitals.get_vitals_by_id, name='get_vitals_by_id'),
-    path('vitals/by_visit', vitals.get_vitals_by_visit, name='get_vitals_by_visit'),
-    path('vitals/by_patient', vitals.get_vitals_by_patient, name='get_vitals_by_patient'),
+    path('medicalvitals/new', medicalvitals.create_new_vitals, name='create_vitals'),
+    path('medicalvitals/update_by_id', medicalvitals.update_vitals, name='update_vitals_by_id'),
+    path('medicalvitals/by_id', medicalvitals.get_vitals_by_id, name='get_vitals_by_id'),
+    path('medicalvitals/by_visit', medicalvitals.get_vitals_by_visit, name='get_vitals_by_visit'),
+    path('medicalvitals/by_patient', medicalvitals.get_vitals_by_patient, name='get_vitals_by_patient'),
 
     # Postreferral Creation/Retrieval Endpoints
     path('postreferral/new', postreferral.create_new_postreferral, name='create_postreferral'),
@@ -64,8 +64,8 @@ urlpatterns = [
     path('postreferral/by_patient', postreferral.get_postreferral_by_patient, name='get_postreferral_by_patient'),
 
     # Consult Creation/Retrieval Endpoints
-    path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
-    path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
+    # path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
+    # path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
     path('consult/new', consult.create_new_consult, name='create_new_consult')
 
 ]
