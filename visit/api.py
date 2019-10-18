@@ -4,6 +4,7 @@ from django.db import DataError
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
+import json
 
 from clinicmodels.models import Patient, Visit
 from visit.forms import VisitForm
@@ -13,37 +14,34 @@ from visit.forms import VisitForm
 @csrf_exempt
 def create_new_visit(request):
     try:
-        print(request.POST)
-        required_consults = request.POST.getlist('consult_required')
-        if 'patient' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'patient' not found"}, status=400)
         patient_id = request.POST['patient']
-        print(required_consults)
+        
+        # check if patient exists
+        # error will be raised if it does not exist
+        patient = Patient.objects.get(pk=patient_id)
 
-        # Patient exists, go on to create a new visit
-        Patient.objects.get(pk=patient_id)
+        # check if consultations has any content
+        consultations = json.loads(request.POST['consultations'])
 
+        if len(consultations) == 0:
+            return JsonResponse({"message": "Patient should have at least one consultation"}, status=400)
+
+        # if all is good, proceed to save data
+        print('checkpoint! all good.')
         visit_form = VisitForm(request.POST)
         if visit_form.is_valid():
-            visit = visit_form.save()
+            print('proceeding to save')
 
-            # if required_consults is not None:
-            #     print("size: ", len(required_consults))
-            #     for consult in required_consults:
-            #         consult_type = ConsultType.objects.get(type=consult)
-            #         visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
-            #         visitconsult.save()
-            # else:
-            #     consult_type = ConsultType.objects.all()[0]
-            #     visitconsult = VisitConsult(visit=visit, consult_type=consult_type)
-            #     visitconsult.save()
+            visit  = visit_form.save()
+
             response = serializers.serialize("json", [visit, ])
             return HttpResponse(response, content_type='application/json')
+
         else:
             return JsonResponse(visit_form.errors, status=400)
+       
     except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-
+        return JsonResponse({"message": str(e)}, status=400)
 
 @api_view(['POST'])
 @csrf_exempt

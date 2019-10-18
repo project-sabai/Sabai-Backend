@@ -6,31 +6,41 @@ from django.db import DataError
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
 
 from clinicmodels.models import MedicalVitals, Visit
 from medicalvitals.forms import MedicalVitalsForm
 
+from clinicmodels.models import Medication
+from medication.forms import MedicationForm
+
+# Remember
+# Create
+# Read
+# Updated
+# Delete
 
 @api_view(['POST'])
 @csrf_exempt
-def create_new_vitals(request):
+def create_new(request):
     try:
+        username = request.POST['username']
+        password = request.POST['password']
+        title = request.POST['title']
+        name = request.POST['name']
 
-        # check if vitals exists
-        # error will be raised if it does not exist
-        visit = Visit.objects.get(pk = request.POST['visit'])
+        print('checkpoint: can get information')
 
-        form = MedicalVitalsForm(request.POST)
-        if form.is_valid():
-            vitals = form.save(commit=False)
-            vitals.save()
-            response = serializers.serialize("json", [vitals, ])
-            return HttpResponse(response, content_type="application/json")
-        else:
-            return JsonResponse(form.errors, status=400)
-    except DataError as e:
+        user = User.objects.create_user(username, None, password)
+        user.first_name = title
+        user.last_name = name
+
+        user.save()
+
+        return JsonResponse({"message": 'success'}, status=200)
+    except Exception as e:
+        print('error is ', e)
         return JsonResponse({"message": str(e)}, status=400)
-
 
 @api_view(['POST'])
 @csrf_exempt
@@ -86,47 +96,12 @@ def update_vitals(request):
     except TypeError as e:
         return JsonResponse({"message", str(e)}, status=400)
 
-
 @api_view(['GET'])
-def get_vitals_by_id(request):
+def get_details(request):
     try:
-        if 'id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
-        vitals_id = request.GET['id']
-        vitals = MedicalVitals.objects.get(pk=vitals_id)
-        response = serializers.serialize("json", [vitals, ])
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        users = User.objects.all()
+        response = serializers.serialize("json", users)
+        return HttpResponse(response, content_type="application/json")
+    except Exception as e:
+        print('error is ', e)
 
-
-@api_view(['GET'])
-def get_vitals_by_visit(request):
-    try:
-        if 'visit_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'visit_id' not found"}, status=400)
-        visit_id = request.GET['visit_id']
-        vitals = MedicalVitals.objects.filter(visit=visit_id)
-        response = serializers.serialize("json", vitals)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
-
-
-@api_view(['GET'])
-def get_vitals_by_patient(request):
-    try:
-        if 'patient_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'patient_id' not found"}, status=400)
-        patient_id = request.GET['patient_id']
-        vitals = MedicalVitals.objects.filter(visit__patient_id=patient_id)
-        response = serializers.serialize("json", vitals)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)

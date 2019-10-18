@@ -16,11 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from addendum import api as addendum
 from medicalvitals import api as medicalvitals
 from visit import api as visit
 from login import api as login
 from consult import api as consult
 from postreferral import api as postreferral
+from medication import api as medication
+from users import api as users
+from order import api as order
 from rest_framework_simplejwt import views as jwt_views
 import patient.api as patient
 
@@ -34,12 +38,13 @@ urlpatterns = [
     path('api/token/verify/', jwt_views.TokenVerifyView.as_view(), name='token_verify'),
 
     # Patient Creation/Retrieval Endpoints
-    path('patients/all', patient.get_all_patients, name='get_all_patients'),
-    path('patients/by_name', patient.get_patient_by_name, name='get_patient_by_name'),
-    path('patients/by_id', patient.get_patient_by_id, name='get_patient_by_id'),
+    # path('patients/all', patient.get_all_patients, name='get_all_patients'),
+    # path('patients/by_name', patient.get_patient_by_name, name='get_patient_by_name'),
+    # path('patients/by_id', patient.get_patient_by_id, name='get_patient_by_id'),
     path('patients/new', patient.create_new_patient, name='new_patient'),
-    path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image'),
-    path('patients/update_by_id', patient.update_patient, name='patient_update'),
+    # path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image'),
+    # path('patients/update_by_id', patient.update_patient, name='patient_update'),
+    path('patients/get', patient.get_details, name='get_details'),
 
     # Visit Creation/Retrieval Endpoints
     path('visit/new', visit.create_new_visit, name='create_visit'),
@@ -57,7 +62,7 @@ urlpatterns = [
     path('medicalvitals/by_patient', medicalvitals.get_vitals_by_patient, name='get_vitals_by_patient'),
 
     # Postreferral Creation/Retrieval Endpoints
-    path('postreferral/new', postreferral.create_new_postreferral, name='create_postreferral'),
+    path('postreferral/new', postreferral.create_new, name='create_new'),
     path('postreferral/update_by_id', postreferral.update_postreferral, name='update_postreferral_by_id'),
     path('postreferral/by_id', postreferral.get_postreferral_by_id, name='get_postreferral_by_id'),
     path('postreferral/by_visit', postreferral.get_postreferral_by_visit, name='get_postreferral_by_visit'),
@@ -66,6 +71,21 @@ urlpatterns = [
     # Consult Creation/Retrieval Endpoints
     # path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
     # path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
-    path('consult/new', consult.create_new_consult, name='create_new_consult')
+    path('consult/new', consult.create_new, name='create_new'),
+    path('consults/get', consult.get_consults, name='get_consults'),
+
+    # Medication
+    path('medication/new', medication.create_new, name='create_new'),
+    path('medication/get', medication.get_details, name='get_details'),
+
+    # User
+    path('user/new', users.create_new, name='create_new'),
+    path('user/get', users.get_details, name='get_details'),
+
+    # Addendum
+    path('addendum/new', addendum.create_new, name='create_new'),
+
+    # Order
+    path('order/new', order.create_new, name='create_new')
 
 ]

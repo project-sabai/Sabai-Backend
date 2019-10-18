@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DataError
 from django.http import JsonResponse, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
+from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 
 from clinicmodels.models import Patient
@@ -22,6 +23,19 @@ def get_all_patients(request):
     patients = Patient.objects.all()
     response = serializers.serialize("json", patients)
     return HttpResponse(response, content_type="application/json")
+
+# THIS IS THE MODEL EXAMPLE!!!!
+@api_view(['GET'])
+def get_details(request):
+    try:
+        sort_params = request.GET.dict()
+        patients = Patient.objects.filter(**sort_params)
+        response = serializers.serialize('json', patients)
+        return HttpResponse(response, content_type="application/json")
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
 
 
 @api_view(['GET'])
@@ -103,8 +117,13 @@ def create_new_patient(request):
     :param request: POST request with the required parameters. Date parameters are accepted in the format 1995-03-30.
     :return: Http Response with corresponding status code
     '''
+    
+    
     try:
+        # print('look here fam ', request.POST['id'])
+        
         form = PatientForm(request.POST, request.FILES)
+        print('this is form homie ', form)
         if form.is_valid():
             patient = form.save(commit=False)
             patient.save()

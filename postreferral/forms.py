@@ -5,4 +5,9 @@ from clinicmodels.models import PostReferral
 class PostreferralForm(forms.ModelForm):
     class Meta:
         model = PostReferral
-        fields = ['visit', 'recorder', 'remarks']
+        fields = [
+            'consult',
+            'doctor',
+            'remarks',
+            'created_at',
+        ]

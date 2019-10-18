@@ -5,24 +5,48 @@ from django.db import DataError
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
+from django.utils.dateparse import parse_datetime
 
-from clinicmodels.models import Visit
+from clinicmodels.models import Visit, Consult
 from consult.forms import ConsultForm
 
-
-@api_view(['GET'])
-def get_all_consult_types(request):
+@api_view(['POST'])
+@csrf_exempt
+def create_new(request):
     try:
-        consulttypes = ConsultType.objects.all()
-        if consulttypes.count() == 0:
-            return JsonResponse({"message": "ConsultType matching query does not exist"}, status=404)
-        response = serializers.serialize("json", consulttypes)
-        return HttpResponse(response, content_type='application/json')
+        consult_form = ConsultForm(request.POST)
+
+
+
+
+        if consult_form.is_valid():
+            # print('this is the consult_form ', consult_form)
+            # consult_form.consult_date = request.POST['consult_date']
+            # print('doneso ', consult_form )
+            consult = consult_form.save()
+            response = serializers.serialize("json", [consult, ])
+            
+            return HttpResponse(response, content_type='application/json')
+        else:
+            return JsonResponse({"message": consult_form.errors}, status=400)
     except ObjectDoesNotExist as e:
+        print('this is the error ', e)
         return JsonResponse({"message": str(e)}, status=404)
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
+@api_view(['GET'])
+def get_consults(request):
+    try:
+        sort_params = request.GET.dict()
+        consults = Consult.objects.filter(**sort_params)
+        response = serializers.serialize('json', consults)
+        return HttpResponse(response, content_type="application/json")
+
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
 
 # @api_view(['POST'])
 # def create_new_consult_type(request):
@@ -39,33 +63,3 @@ def get_all_consult_types(request):
 #     except DataError as e:
 #         return JsonResponse({"message": str(e)}, status=400)
 
-
-@api_view(['POST'])
-@csrf_exempt
-def create_new_consult(request):
-    try:
-        if 'visit' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'visit' not found"}, status=400)
-        if 'doctor' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'doctor' not found"}, status=400)
-        if 'type' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'type' not found"}, status=400)
-        visit_id = request.POST['visit']
-        doctor_id = request.POST['doctor']
-        # consult_type_name = request.POST['consult_type']
-        Visit.objects.get(pk=visit_id)
-        User.objects.get(pk=doctor_id)
-        # consult_type = ConsultType.objects.get(type=consult_type_name)
-
-        consult_form = ConsultForm(request.POST)
-        # consult_form.consult_type = consult_type
-        if consult_form.is_valid():
-            consult = consult_form.save()
-            response = serializers.serialize("json", [consult, ])
-            return HttpResponse(response, content_type='application/json')
-        else:
-            return JsonResponse({"message": consult_form.errors}, status=400)
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
