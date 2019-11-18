@@ -10,6 +10,8 @@ class DentalVitalsForm(forms.ModelForm):
             'complaints',
             'intraoral',
             'diagnosis',
+            'exo',
+            'cap',
+            'f',
             'others',
-            'referred_for'
         ]

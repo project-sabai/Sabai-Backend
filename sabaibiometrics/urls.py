@@ -18,6 +18,7 @@ from django.urls import path
 
 from addendum import api as addendum
 from medicalvitals import api as medicalvitals
+from dentalvitals import api as dentalvitals
 from visit import api as visit
 from login import api as login
 from consult import api as consult
@@ -27,6 +28,11 @@ from users import api as users
 from order import api as order
 from rest_framework_simplejwt import views as jwt_views
 import patient.api as patient
+
+from django.conf.urls.static import static
+from django.conf import settings
+
+print('lookee here ', settings.MEDIA_ROOT)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,45 +44,41 @@ urlpatterns = [
     path('api/token/verify/', jwt_views.TokenVerifyView.as_view(), name='token_verify'),
 
     # Patient Creation/Retrieval Endpoints
-    # path('patients/all', patient.get_all_patients, name='get_all_patients'),
-    # path('patients/by_name', patient.get_patient_by_name, name='get_patient_by_name'),
-    # path('patients/by_id', patient.get_patient_by_id, name='get_patient_by_id'),
-    path('patients/new', patient.create_new_patient, name='new_patient'),
-    # path('patients/image_by_id', patient.get_patient_image_by_id, name='patient_image'),
-    # path('patients/update_by_id', patient.update_patient, name='patient_update'),
+    path('patients/new', patient.create_new, name='create_new'),
     path('patients/get', patient.get_details, name='get_details'),
+    path('patients/update', patient.update_details, name='update_details'),
+    path('patients/find_by_scan', patient.find_by_scan, name='find_by_scan'),
 
     # Visit Creation/Retrieval Endpoints
-    path('visit/new', visit.create_new_visit, name='create_visit'),
-    path('visit/update_by_id', visit.update_visit, name='update_visit_by_id'),
-    path('visit/by_id', visit.get_visit_by_id, name='get_visit_by_id'),
-    path('visit/by_patient', visit.get_visit_by_patient, name='get_visit_by_patient'),
-    path('visit/by_status', visit.get_visit_by_status, name='get_visit_by_status'),
-    path('visit/by_patient_and_status', visit.get_visit_by_patient_and_status, name='get_visit_by_patient_and_status'),
+    path('visit/new', visit.create_new, name='create_new'),
+    path('visit/get', visit.get_details, name='get_details'),
+    path('visit/update', visit.update_details, name='update_details'),
 
     # Vitals Creation/Retrieval Endpoints
-    path('medicalvitals/new', medicalvitals.create_new_vitals, name='create_vitals'),
-    path('medicalvitals/update_by_id', medicalvitals.update_vitals, name='update_vitals_by_id'),
-    path('medicalvitals/by_id', medicalvitals.get_vitals_by_id, name='get_vitals_by_id'),
-    path('medicalvitals/by_visit', medicalvitals.get_vitals_by_visit, name='get_vitals_by_visit'),
-    path('medicalvitals/by_patient', medicalvitals.get_vitals_by_patient, name='get_vitals_by_patient'),
+    path('medicalvitals/new', medicalvitals.create_new, name='create_new'),
+    path('medicalvitals/get', medicalvitals.get_details, name='get_details'),
+    path('medicalvitals/update', medicalvitals.update_details, name='update_details'),
+
+    # Visit Creation/Retrieval Endpoints
+    path('dentalvitals/new', dentalvitals.create_new, name='create_new'),
+    path('dentalvitals/get', dentalvitals.get_details, name='get_details'),
+    path('dentalvitals/update', dentalvitals.update_details, name='update_details'),
 
     # Postreferral Creation/Retrieval Endpoints
-    path('postreferral/new', postreferral.create_new, name='create_new'),
-    path('postreferral/update_by_id', postreferral.update_postreferral, name='update_postreferral_by_id'),
-    path('postreferral/by_id', postreferral.get_postreferral_by_id, name='get_postreferral_by_id'),
-    path('postreferral/by_visit', postreferral.get_postreferral_by_visit, name='get_postreferral_by_visit'),
-    path('postreferral/by_patient', postreferral.get_postreferral_by_patient, name='get_postreferral_by_patient'),
+    path('postreferrals/new', postreferral.create_new, name='create_new'),
+    path('postreferrals/get', postreferral.get_details, name='get_details'),
+    path('postreferrals/update', postreferral.update_details, name='update_details'),
 
     # Consult Creation/Retrieval Endpoints
     # path('consulttype/all', consult.get_all_consult_types, name='get_all_consult_types'),
     # path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
-    path('consult/new', consult.create_new, name='create_new'),
-    path('consults/get', consult.get_consults, name='get_consults'),
+    path('consults/new', consult.create_new, name='create_new'),
+    path('consults/get', consult.get_details, name='get_details'),
 
     # Medication
     path('medication/new', medication.create_new, name='create_new'),
     path('medication/get', medication.get_details, name='get_details'),
+    path('medication/update', medication.update_details, name='update_details'),
 
     # User
     path('user/new', users.create_new, name='create_new'),
@@ -88,4 +90,4 @@ urlpatterns = [
     # Order
     path('order/new', order.create_new, name='create_new')
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

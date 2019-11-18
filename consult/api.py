@@ -10,14 +10,16 @@ from django.utils.dateparse import parse_datetime
 from clinicmodels.models import Visit, Consult
 from consult.forms import ConsultForm
 
+import json
+
 @api_view(['POST'])
 @csrf_exempt
 def create_new(request):
     try:
-        consult_form = ConsultForm(request.POST)
-
-
-
+        data = json.loads(request.body.decode('utf-8'))
+        print('data ', data)
+        print('gap ,')
+        consult_form = ConsultForm(data)
 
         if consult_form.is_valid():
             # print('this is the consult_form ', consult_form)
@@ -28,6 +30,8 @@ def create_new(request):
             
             return HttpResponse(response, content_type='application/json')
         else:
+            print('failing')
+            print(consult_form.errors)
             return JsonResponse({"message": consult_form.errors}, status=400)
     except ObjectDoesNotExist as e:
         print('this is the error ', e)
@@ -36,30 +40,36 @@ def create_new(request):
         return JsonResponse({"message": str(e)}, status=400)
 
 @api_view(['GET'])
-def get_consults(request):
+def get_details(request):
     try:
         sort_params = request.GET.dict()
         consults = Consult.objects.filter(**sort_params)
-        response = serializers.serialize('json', consults)
-        return HttpResponse(response, content_type="application/json")
 
+        response = serializers.serialize('json', consults)
+
+        return HttpResponse(response, content_type="application/json")
     except Exception as e:
         return JsonResponse({
             "message": str(e)
         }, status = 400)
 
-# @api_view(['POST'])
-# def create_new_consult_type(request):
-#     try:
-#         if 'consult_type' not in request.POST:
-#             return JsonResponse({"message": "POST: parameter 'consult_type' not found"}, status=400)
-#         consult_type_field = request.POST['consult_type']
-#         consulttype = ConsultType(type=consult_type_field)
-#         consulttype.save()
-#         response = serializers.serialize("json", [consulttype, ])
-#         return HttpResponse(response, content_type='application/json')
-#     except ObjectDoesNotExist as e:
-#         return JsonResponse({"message": str(e)}, status=404)
-#     except DataError as e:
-#         return JsonResponse({"message": str(e)}, status=400)
+@api_view(['PATCH'])
+def update_details(request):
+    try:
+        # finding row to update
+        sort_params = request.query_params.dict()
+        consult = Consult.objects.filter(**sort_params)
+
+        # updating row and saving changes to DB
+        data = json.loads(request.body.decode('utf-8'))
+        consult.update(**data)
+
+        return JsonResponse({
+            "message": "success"
+        }, status = 200)
+
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
 

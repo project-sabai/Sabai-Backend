@@ -13,9 +13,11 @@ from dentalvitals.forms import DentalVitalsForm
 
 @api_view(['POST'])
 @csrf_exempt
-def create_new_vitals(request):
+def create_new(request):
     try:
-        form = DentalVitalsForm(request.POST)
+        data = json.loads(request.body.decode('utf-8'))
+        # form = DentalVitalsForm(request.POST)
+        form = DentalVitalsForm(data)
         if form.is_valid():
             vitals = form.save(commit=False)
             vitals.save()
@@ -26,81 +28,36 @@ def create_new_vitals(request):
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
-
-@api_view(['POST'])
-@csrf_exempt
-def update_vitals(request):
-    try:
-        if 'id' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'id' not found"}, status=400)
-        vitals_id = request.POST['id']
-        vitals = DentalVitals.objects.get(pk=vitals_id)
-
-        if 'complaints' in request.POST:
-            vitals.complaints = request.POST['complaints']
-        if 'intraoral' in request.POST:
-            vitals.intraoral = request.POST['intraoral']
-        if 'diagnosis' in request.POST:
-            vitals.diagnosis = request.POST['diagnosis']
-        if 'complaints' in request.POST:
-            vitals.others = request.POST['others']
-        if 'complaints' in request.POST:
-            vitals.referred_for = request.POST['referred_for']
-            
-        vitals.save()
-        response = serializers.serialize("json", [vitals, ])
-        return HttpResponse(response, content_type='application/json')
-
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message", str(e)}, status=400)
-    except TypeError as e:
-        return JsonResponse({"message", str(e)}, status=400)
-
-
 @api_view(['GET'])
-def get_vitals_by_id(request):
+def get_details(request):
     try:
-        if 'id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
-        vitals_id = request.GET['id']
-        vitals = DentalVitals.objects.get(pk=vitals_id)
-        response = serializers.serialize("json", [vitals, ])
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        sort_params = request.GET.dict()
+        vitals = DentalVitals.objects.filter(**sort_params)
 
+        response = serializers.serialize('json', vitals)
 
-@api_view(['GET'])
-def get_vitals_by_visit(request):
+        return HttpResponse(response, content_type="application/json")
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
+
+@api_view(['PATCH'])
+def update_details(request):
     try:
-        if 'visit_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'visit_id' not found"}, status=400)
-        visit_id = request.GET['visit_id']
-        vitals = DentalVitals.objects.filter(visit=visit_id)
-        response = serializers.serialize("json", vitals)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        # finding row to update
+        sort_params = request.query_params.dict()
+        vitals = DentalVitals.objects.filter(**sort_params)
 
+        # updating row and saving changes to DB
+        data = json.loads(request.body.decode('utf-8'))
+        vitals.update(**data)
 
-@api_view(['GET'])
-def get_vitals_by_patient(request):
-    try:
-        if 'patient_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'patient_id' not found"}, status=400)
-        patient_id = request.GET['patient_id']
-        vitals = DentalVitals.objects.filter(visit__patient_id=patient_id)
-        response = serializers.serialize("json", vitals)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        return JsonResponse({
+            "message": "success"
+        }, status = 200)
+
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)

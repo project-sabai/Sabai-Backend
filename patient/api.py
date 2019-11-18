@@ -1,5 +1,6 @@
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from django.db import DataError
 from django.http import JsonResponse, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
@@ -13,16 +14,14 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes, api_view
 
+import json
+import base64
+import uuid
+import face_recognition
+
 """
 Handles all operations regarding the retrieval, update of patient models.
 """
-
-
-@api_view(['GET'])
-def get_all_patients(request):
-    patients = Patient.objects.all()
-    response = serializers.serialize("json", patients)
-    return HttpResponse(response, content_type="application/json")
 
 # THIS IS THE MODEL EXAMPLE!!!!
 @api_view(['GET'])
@@ -30,88 +29,139 @@ def get_details(request):
     try:
         sort_params = request.GET.dict()
         patients = Patient.objects.filter(**sort_params)
+
+        # create a copy of the QueryDict
+        
+        # get image file
+        # convert to base64
+        # set base64 as new value of picture
+        
+        print('this is patients ', patients.values())
         response = serializers.serialize('json', patients)
+
+        
+
         return HttpResponse(response, content_type="application/json")
     except Exception as e:
         return JsonResponse({
             "message": str(e)
         }, status = 400)
 
-
-@api_view(['GET'])
-# @permission_classes((IsAuthenticated,))
-def get_patient_by_name(request):
-    """
-    GET patient by name
-    :param request: GET request with a name parameter
-    :return: JSON Response with an array of users matching name
-    """
+@api_view(['POST'])
+def find_by_scan(request):
     try:
-        # user = User.objects.get(username=request.user)
-        # print(user.email)
-        if 'name' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'name' not found"}, status=400)
-        patient_name = request.GET['name']
-        patient = Patient.objects.filter(name__contains=patient_name)
-        if patient.count() == 0:
-            return JsonResponse({"message": "Patient matching query does not exist"}, status=404)
-        response = serializers.serialize("json", patient)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        data = json.loads(request.body.decode('utf-8'))
+        image_data = data['imageDetails']
 
+        header, base64Data = image_data.split(';base64,')   
 
-@api_view(['GET'])
-def get_patient_by_id(request):
-    '''
-    GET patient identified by id
-    :param request: GET request with an id parameter
-    :return: JSON Response with an array of users mathing id
-    '''
+        try:
+            decoded_file = base64.b64decode(base64Data)
+        except TypeError:
+            print('invalid image')
+        
+        image_file = ContentFile(decoded_file, name='temp.jpeg')
 
+        known_image = face_recognition.load_image_file(image_file)
+        face_locations = face_recognition.face_locations(known_image)
+        print(face_locations)
+        # print(known_image)
+        encoding = face_recognition.face_encodings(known_image)[0]
+        print('this is ', encoding)
+
+        patients = Patient.objects.all()
+        patients_list = list(patients.values())
+
+        encode_list = []
+        who_list = []
+
+        for patient in patients_list:
+            try:
+                image = patient['picture']
+                name = patient['name']
+                other_image = face_recognition.load_image_file('{}'.format(image))
+                
+                other_encoding = face_recognition.face_encodings(other_image)
+                if len(other_encoding) > 0:
+                    # print(other_encoding[0])
+                    # print('')
+                    encode_list.append(other_encoding[0])
+                    who_list.append(name)
+            except Exception as e:
+                print('error')
+
+        print('weeeee')
+        # print(list(patients.values())[-1])
+        # print('???')
+
+        # patient = list(patients.values())[-5]
+        # image_1 = patient['picture']
+
+        # other_image = face_recognition.load_image_file('{}'.format(image_1))
+        # other_encoding = face_recognition.face_encodings(other_image)[0]
+
+        # print(other_encoding)
+
+        results = face_recognition.compare_faces(encode_list, encoding, 0.5)
+        count = 0
+        for i in range(len(results)):
+            if results[i]:
+                count += 1
+                print('this is the guy ', who_list[i])
+        print('num matched ', count)
+
+        # try:
+        #     img = open("../Sabai-Backend/{0}".format(image),'r+b')
+        #     # img = open("../final2018/kek.jpeg", 'rb')
+        #     print('photo success')
+        # except IOError:
+        #     img = None
+        #     print("Error in opening image")
+
+        return JsonResponse({
+            "message": 'success'
+        }, status = 400)
+    except Exception as e:
+        print('this is the error ', e)
+        
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
+
+    
+    
+    
+    # receives an image
+    # convert to file format
+    # get all images from db
+
+    # do face recognition
+
+    # receive array of 
+
+@api_view(['PATCH'])
+def update_details(request):
     try:
-        if 'id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
-        patient_id = request.GET['id']
-        patient = Patient.objects.filter(id=patient_id)
-        response = serializers.serialize("json", patient)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        # finding row to update
+        sort_params = request.query_params.dict()
+        patient = Patient.objects.filter(**sort_params)
 
+        # updating row and saving changes to DB
+        data = json.loads(request.body.decode('utf-8'))
+        patient.update(**data)
 
-@api_view(['GET'])
-def get_patient_image_by_id(request):
-    '''
-    GET image of patient by id
-    :param request: GET with parameter id of patient you want the image of
-    :return: FileResponse if image is found, 404 if not
-    '''
-    try:
-        if 'id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
-        patient_id = request.GET['id']
-        patient = Patient.objects.get(pk=patient_id)
-        image = patient.picture
-        if "jpeg" in image.name.lower() or "jpg" in image.name.lower():
-            return HttpResponse(image.file.read(), content_type="image/jpeg")
-        elif "png" in image.name.lower():
-            return HttpResponse(image.file.read(), content_type="image/png")
-        else:
-            return JsonResponse({"message": "Patient image is in the wrong format"}, status=400)
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except ValueError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        return JsonResponse({
+            "message": "success"
+        }, status = 200)
 
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
 
 @api_view(['POST'])
 @csrf_exempt
-def create_new_patient(request):
+def create_new(request):
     '''
     POST request with multipart form to create a new patient
     :param request: POST request with the required parameters. Date parameters are accepted in the format 1995-03-30.
@@ -121,8 +171,30 @@ def create_new_patient(request):
     
     try:
         # print('look here fam ', request.POST['id'])
+        print('post ', request)
+        print('post data ', json.loads(request.body.decode('utf-8')))
+        print('post files ', request.FILES)
+
+        data = json.loads(request.body.decode('utf-8'))
+        image_data  = data['imageDetails']
+        # print('image data ', image_data)
+
+        header, base64Data = image_data.split(';base64,')
+
+        try:
+            decoded_file =  base64.b64decode(base64Data)
+        except TypeError:
+            print('invalid image')
         
-        form = PatientForm(request.POST, request.FILES)
+        file_name = str(uuid.uuid4())[:12]
+        complete_file_name = '{}.jpeg'.format(file_name)
+
+        request.FILES['picture'] = ContentFile(decoded_file, name=complete_file_name)
+        print('this is the final product ', request.FILES)
+
+
+        form  = PatientForm(data, request.FILES)
+        # form = PatientForm(request.POST, request.FILES)
         print('this is form homie ', form)
         if form.is_valid():
             patient = form.save(commit=False)
@@ -131,47 +203,9 @@ def create_new_patient(request):
             return HttpResponse(response, content_type="application/json")
         else:
             return JsonResponse(form.errors, status=400)
+        return JsonResponse({}, status=500)
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
 
-@api_view(['POST'])
-@csrf_exempt
-def update_patient(request):
-    '''
-    Update patient data based on the parameters
-    :param request: POST with data
-    :return: JSON Response with new data, or error
-    '''
-    if 'id' not in request.POST:
-        return JsonResponse({"message": "POST: parameter 'id' not found"}, status=400)
-    patient_id = request.POST['id']
-    try:
-        patient = Patient.objects.get(pk=patient_id)
-        if 'village_prefix' in request.POST:
-            patient.village_prefix = request.POST['village_prefix']
-        if 'name' in request.POST:
-            patient.name = request.POST['name']
-        if 'contact_no' in request.POST:
-            patient.contact_no = request.POST['contact_no']
-        if 'gender' in request.POST:
-            patient.gender = request.POST['gender']
-        if 'travelling_time_to_village' in request.POST:
-            patient.travelling_time_to_village = request.POST['travelling_time_to_village']
-        if 'date_of_birth' in request.POST['date_of_birth']:
-            patient.date_of_birth = request.POST['date_of_birth']
-        if 'drug_allergy' in request.POST:
-            patient.drug_allergy = request.POST['drug_allergy']
-        if 'parent' in request.POST:
-            patient.parent = request.POST['parent']
-        if 'face_encodings' in request.POST:
-            patient.face_encodings = request.POST['face_encodings']
-        if 'picture' in request.FILES:
-            patient.picture = request.FILES['picture']
-        patient.save()
-        response = serializers.serialize("json", [patient, ])
-        return HttpResponse(response, content_type="application/json")
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+

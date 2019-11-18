@@ -5,6 +5,17 @@ from clinicmodels.models import Consult
 class ConsultForm(forms.ModelForm):
     class Meta:
         model = Consult
-        fields = ['id', 'visit', 'type', 'doctor', 'notes', 'diagnosis', 'problems',
-                  'urine_test', 'hemocue_count', 'blood_glucose',
-                  'referrals', 'chronic_referral', 'treatments_done', 'created_at']
+        fields = [ 
+            'visit', 
+            'type', 
+            'doctor', 
+            'notes', 
+            'diagnosis', 
+            'problems',
+            'exo',
+            'cap',
+            'sdf',
+            'f',
+            'others',
+            'updated_at'
+            ]

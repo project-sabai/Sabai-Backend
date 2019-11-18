@@ -8,90 +8,88 @@ from rest_framework.decorators import api_view
 from clinicmodels.models import Visit, PostReferral
 from postreferral.forms import PostreferralForm
 
+import json
+
 
 @api_view(['POST'])
 @csrf_exempt
 def create_new(request):
     try:
-        # if 'visit' not in request.POST:
-        #     return JsonResponse({"message": "POST: parameter 'visit' not found"}, status=400)
-        # visit = request.POST['visit']
+        data = json.loads(request.body.decode('utf-8'))
+        print('data ', data)
+        print('gap ,')
+        order_form = OrderForm(data)
 
-        # Visit.objects.get(pk=visit)
-        postreferral_form = PostreferralForm(request.POST)
-        if postreferral_form.is_valid():
-            postreferral = postreferral_form.save()
-            response = serializers.serialize("json", [postreferral, ])
+        if order_form.is_valid():
+            # print('this is the consult_form ', consult_form)
+            # consult_form.consult_date = request.POST['consult_date']
+            # print('doneso ', consult_form )
+            order = order_form.save()
+            response = serializers.serialize("json", [order, ])
+            
             return HttpResponse(response, content_type='application/json')
         else:
-            return JsonResponse(postreferral_form.errors, status=400)
+            print('failing')
+            print(order_form.errors)
+            return JsonResponse({"message": order_form.errors}, status=400)
     except ObjectDoesNotExist as e:
+        print('this is the error ', e)
         return JsonResponse({"message": str(e)}, status=404)
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
+# @api_view(['POST'])
+# @csrf_exempt
+# def create_new(request):
+#     try:
+#         # if 'visit' not in request.POST:
+#         #     return JsonResponse({"message": "POST: parameter 'visit' not found"}, status=400)
+#         # visit = request.POST['visit']
 
-@api_view(['POST'])
-@csrf_exempt
-def update_postreferral(request):
-    try:
-        if 'id' not in request.POST:
-            return JsonResponse({"message": "POST: parameter 'id' not found"}, status=400)
-        postreferral_id = request.POST['id']
-        postreferral = PostReferral.objects.get(pk=postreferral_id)
-        if 'recorder' in request.POST:
-            postreferral.recorder = request.POST['recorder']
-        if 'remarks' in request.POST:
-            postreferral.remarks = request.POST['remarks']
-        postreferral.save()
-        response = serializers.serialize("json", [postreferral, ])
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+#         # Visit.objects.get(pk=visit)
+#         postreferral_form = PostreferralForm(request.POST)
+#         if postreferral_form.is_valid():
+#             postreferral = postreferral_form.save()
+#             response = serializers.serialize("json", [postreferral, ])
+#             return HttpResponse(response, content_type='application/json')
+#         else:
+#             return JsonResponse(postreferral_form.errors, status=400)
+#     except ObjectDoesNotExist as e:
+#         return JsonResponse({"message": str(e)}, status=404)
+#     except DataError as e:
+#         return JsonResponse({"message": str(e)}, status=400)
 
 
 @api_view(['GET'])
-def get_postreferral_by_id(request):
+def get_details(request):
     try:
-        if 'id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'id' not found"}, status=400)
-        postreferral_id = request.GET['id']
-        postreferral = PostReferral.objects.get(pk=postreferral_id)
-        response = serializers.serialize("json", [postreferral, ])
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        sort_params = request.GET.dict()
+        postReferrals = PostReferral.objects.filter(**sort_params)
 
+        response = serializers.serialize('json', postReferrals)
 
-@api_view(['GET'])
-def get_postreferral_by_visit(request):
+        return HttpResponse(response, content_type="application/json")
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
+
+@api_view(['PATCH'])
+def update_details(request):
     try:
-        if 'visit_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'visit_id' not found"}, status=400)
-        visit_id = request.GET['visit_id']
-        postreferral = PostReferral.objects.filter(visit=visit_id)
-        response = serializers.serialize("json", postreferral)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        # finding row to update
+        sort_params = request.query_params.dict()
+        postReferral = PostReferral.objects.filter(**sort_params)
 
+        # updating row and saving changes to DB
+        data = json.loads(request.body.decode('utf-8'))
+        postReferral.update(**data)
 
-@api_view(['GET'])
-def get_postreferral_by_patient(request):
-    try:
-        if 'patient_id' not in request.GET:
-            return JsonResponse({"message": "GET: parameter 'patient_id' not found"}, status=400)
-        patient_id = request.GET['patient_id']
-        postreferral = PostReferral.objects.filter(visit__patient_id=patient_id)
-        response = serializers.serialize("json", postreferral)
-        return HttpResponse(response, content_type='application/json')
-    except ObjectDoesNotExist as e:
-        return JsonResponse({"message": str(e)}, status=404)
-    except DataError as e:
-        return JsonResponse({"message": str(e)}, status=400)
+        return JsonResponse({
+            "message": "success"
+        }, status = 200)
+
+    except Exception as e:
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)
