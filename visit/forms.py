@@ -7,5 +7,5 @@ class VisitForm(forms.ModelForm):
         model = Visit
         # fields = ['patient', 'status', 'medical_consultation', 'dental_consultation']
         # fields = ['id', 'patient', 'status', 'consultations','created_at']
-        fields = ['id', 'patient', 'status', 'consultations', 'visit_date']
+        fields = ['id', 'patient', 'status', 'visit_date']
 

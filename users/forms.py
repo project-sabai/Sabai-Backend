@@ -6,9 +6,7 @@ class MedicationForm(forms.ModelForm):
     class Meta:
         model = Medication
         fields = [
-            'medicine_name',
-            'reserve_quantity',
-            'quantity',
-            'notes',
-            'remarks'
+            'username',
+            'password',
+            'first_name'
         ]

@@ -7,10 +7,12 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = [
             'medicine',
+            'medicine_name',
             'quantity',
             'visit',
             'consult',
             'notes',
             'remarks',
             'order_status',
+            'doctor'
         ]

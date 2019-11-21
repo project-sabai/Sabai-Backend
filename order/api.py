@@ -47,9 +47,9 @@ def create_new(request):
 def get_details(request):
     try:
         sort_params = request.GET.dict()
-        consults = Consult.objects.filter(**sort_params)
+        orders = Order.objects.filter(**sort_params)
 
-        response = serializers.serialize('json', consults)
+        response = serializers.serialize('json', orders)
 
         return HttpResponse(response, content_type="application/json")
     except Exception as e:
@@ -62,11 +62,11 @@ def update_details(request):
     try:
         # finding row to update
         sort_params = request.query_params.dict()
-        consult = Consult.objects.filter(**sort_params)
+        order = Order.objects.filter(**sort_params)
 
         # updating row and saving changes to DB
         data = json.loads(request.body.decode('utf-8'))
-        consult.update(**data)
+        order.update(**data)
 
         return JsonResponse({
             "message": "success"

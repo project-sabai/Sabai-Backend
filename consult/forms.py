@@ -17,5 +17,6 @@ class ConsultForm(forms.ModelForm):
             'sdf',
             'f',
             'others',
-            'updated_at'
+            'referred_for',
+            'sub_type'
             ]

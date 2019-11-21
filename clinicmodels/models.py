@@ -17,25 +17,11 @@ class Patient(models.Model):
     travelling_time_to_village = models.IntegerField(default=0)
     date_of_birth = models.DateField(default=timezone.now)
     drug_allergy = models.TextField(default="None")
-    # drug_allergy = ArrayField(models.CharField(max_length=255), blank=True, null=True)
     parent = models.IntegerField(blank=True, null=True)
     face_encodings = models.CharField(max_length=3000, blank=True, null=True)
     picture = models.ImageField(upload_to='static/images', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
-
-
-# class Fingerprint(models.Model):
-#     class Meta:
-#         db_table = "fingerprints"
-
-#     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-#     fg_value = models.BinaryField(blank=True, null=True)
-#     size = models.IntegerField(blank=True, null=True)
-#     fg_image = models.BinaryField(blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
 
 class Visit(models.Model):
     class Meta:
@@ -47,7 +33,7 @@ class Visit(models.Model):
     status = models.CharField(max_length=100)
     # medical_consultation = models.BooleanField(default=False)
     # dental_consultation = models.BooleanField(default=False)
-    consultations = JSONField()
+    # consultations = JSONField()
     # created_at = models.DateTimeField(auto_now_add=True)
     visit_date=models.DateField(default=timezone.now)
     created_at=models.DateTimeField(default=timezone.now)
@@ -98,28 +84,13 @@ class Consult(models.Model):
 
     # id = models.IntegerField(primary_key=True)
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, null=True)
-    # consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
-    # consult_date = models.DateTimeField(default=timezone.now)
     type = models.CharField(max_length=255)
-    # doctor = models.ForeignKey(User, related_name='doctor_create', on_delete=models.SET_NULL, blank=True, null=True)
+    sub_type = models.CharField(max_length=255, blank=True, null=True)
     doctor = models.CharField(max_length=255)
     notes = models.TextField(blank=True, null=True)
     diagnosis = models.TextField(blank=True, null=True)
     problems = models.TextField(blank=True, null=True)
-    # urine_test = models.TextField(blank=True, null=True)
-    # hemocue_count = models.DecimalField(decimal_places=2, max_digits=5, default=0, blank=True, null=True)
-    # blood_glucose = models.DecimalField(decimal_places=2, max_digits=5, default=0, blank=True, null=True)
-    # blood_glucose_comments = models.CharField(max_length=255, blank=True, null=True)
-    # referrals = models.TextField(blank=True, null=True)
-    # chronic_referral = models.BooleanField(blank=True, null=True)
-    # addendum = JSONField()
-    # addendum = ArrayField(JSONField())
-    # addendum = models.TextField(blank=True, null=True)
-    # # addendum_doctor = models.ForeignKey(User, related_name='doctor_addendum', on_delete=models.SET_NULL,
-    # #                                     blank=True, null=True)
-    # addendum_doctor = models.CharField(max_length=255, blank=True, null=True)
-    # addendum_time = models.DateTimeField(blank=True, null=True)
-    # treatments_done = models.TextField(blank=True, null=True)
+    referred_for = models.CharField(max_length=255, blank=True, null=True)
     
     # These are for dental
     exo = models.CharField(max_length=255, blank=True, null=True)
@@ -152,24 +123,15 @@ class PostReferral(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
-# class VisitConsult(models.Model):
-#     class Meta:
-#         db_table = "visitconsults"
-
-#     visit = models.ForeignKey(Visit, on_delete=models.CASCADE)
-#     consult = models.ForeignKey(Consult, on_delete=models.SET_NULL, blank=True, null=True)
-#     consult_type = models.ForeignKey(ConsultType, on_delete=models.SET_NULL, blank=True, null=True)
-
-
 class Medication(models.Model):
     class Meta:
         db_table = "medication"
 
     medicine_name = models.CharField(max_length=255)
-    reserve_quantity = models.IntegerField(default=0)
+    # reserve_quantity = models.IntegerField(default=0)
     quantity = models.IntegerField(default=0)
     notes = models.TextField(blank=True, null=True)
-    remarks = models.TextField(blank=True, null=True)
+    # remarks = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
 
@@ -179,7 +141,9 @@ class Order(models.Model):
         db_table = "order"
 
     medicine = models.ForeignKey(Medication, on_delete=models.SET_NULL, blank=True, null=True)
+    medicine_name = models.CharField(max_length=255)
     quantity = models.IntegerField(default=0)
+    doctor = models.CharField(max_length=255)
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, blank=True, null=True)
     consult = models.ForeignKey(Consult, on_delete= models.SET_NULL, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
@@ -187,3 +151,16 @@ class Order(models.Model):
     order_status = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
+
+class StockTransactions(models.Model):
+    class Meta:
+        db_table= "stockTransactions"
+
+    medicine = models.ForeignKey(Medication, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.CharField(max_length=255)
+    # approve prescription
+    # edit stock
+    type = models.CharField(max_length=255)
+    # can be positive or negative, depending on what kind of transaction happened
+    quantity = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)

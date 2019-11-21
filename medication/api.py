@@ -23,8 +23,9 @@ from medication.forms import MedicationForm
 @csrf_exempt
 def create_new(request):
     try:
-        print(request.POST)
-        form = MedicationForm(request.POST)
+        data = json.loads(request.body.decode('utf-8'))
+
+        form = MedicationForm(data)
         print('form is valid? ', form.is_valid())
         print(form.errors)
         if form.is_valid():
@@ -38,11 +39,31 @@ def create_new(request):
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
+
+# @api_view(['POST'])
+# @csrf_exempt
+# def create_new(request):
+#     try:
+#         print(request.POST)
+#         form = MedicationForm(request.POST)
+#         print('form is valid? ', form.is_valid())
+#         print(form.errors)
+#         if form.is_valid():
+#             medication = form.save(commit=False)
+#             print('this is medication ', medication)
+#             medication.save()
+#             response = serializers.serialize("json", [medication])
+#             return HttpResponse(response, content_type="application/json")
+#         else:
+#             return JsonResponse(form.errors, status=400)
+#     except DataError as e:
+#         return JsonResponse({"message": str(e)}, status=400)
+
 @api_view(['GET'])
 def get_details(request):
     try:
         sort_params = request.GET.dict()
-        medications = Medication.objects.filter(**sort_params)
+        medications = Medication.objects.order_by('medicine_name').filter(**sort_params)
 
         response = serializers.serialize('json', medications)
 
@@ -57,10 +78,14 @@ def update_details(request):
     try:
         # finding row to update
         sort_params = request.query_params.dict()
+        print('sort params ', sort_params)
         medication = Medication.objects.filter(**sort_params)
+        print('tis the medication ', medication)
 
         # updating row and saving changes to DB
         data = json.loads(request.body.decode('utf-8'))
+
+        print(data)
         medication.update(**data)
 
         return JsonResponse({
@@ -68,6 +93,7 @@ def update_details(request):
         }, status = 200)
 
     except Exception as e:
+        print('error here ', e)
         return JsonResponse({
             "message": str(e)
         }, status = 400)

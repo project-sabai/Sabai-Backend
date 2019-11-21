@@ -7,8 +7,6 @@ class MedicationForm(forms.ModelForm):
         model = Medication
         fields = [
                     'medicine_name',
-                    'reserve_quantity',
                     'quantity',
                     'notes',
-                    'remarks'
                 ]

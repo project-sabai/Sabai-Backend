@@ -88,6 +88,8 @@ urlpatterns = [
     path('addendum/new', addendum.create_new, name='create_new'),
 
     # Order
-    path('order/new', order.create_new, name='create_new')
+    path('order/new', order.create_new, name='create_new'),
+    path('order/get', order.get_details, name='get_details'),
+    path('order/update', order.update_details, name='update_details')
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

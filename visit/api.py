@@ -24,11 +24,8 @@ def create_new(request):
 
         print('this is the data ', data)
 
-        # check if consultations has any content
-        consultations = data['consultations']
-
-        if len(consultations) == 0:
-            return JsonResponse({"message": "Patient should have at least one consultation"}, status=400)
+        # if len(consultations) == 0:
+        #     return JsonResponse({"message": "Patient should have at least one consultation"}, status=400)
 
         # if all is good, proceed to save data
         print('checkpoint! all good.')
