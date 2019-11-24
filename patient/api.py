@@ -63,64 +63,44 @@ def find_by_scan(request):
         image_file = ContentFile(decoded_file, name='temp.jpeg')
 
         known_image = face_recognition.load_image_file(image_file)
-        face_locations = face_recognition.face_locations(known_image)
-        print(face_locations)
-        # print(known_image)
         encoding = face_recognition.face_encodings(known_image)[0]
-        print('this is ', encoding)
 
-        patients = Patient.objects.all()
+        sort_params = request.GET.dict()
+        patients = Patient.objects.filter(**sort_params)
         patients_list = list(patients.values())
 
         encode_list = []
-        who_list = []
+        potential_pk_list = []
 
         for patient in patients_list:
             try:
-                image = patient['picture']
-                name = patient['name']
-                other_image = face_recognition.load_image_file('{}'.format(image))
-                
-                other_encoding = face_recognition.face_encodings(other_image)
+                other_encoding = patient['face_encodings']
+
                 if len(other_encoding) > 0:
-                    # print(other_encoding[0])
-                    # print('')
-                    encode_list.append(other_encoding[0])
-                    who_list.append(name)
+                    encode_list.append(other_encoding)
+                    potential_pk_list.append(patient['id'])
             except Exception as e:
                 print('error')
 
-        print('weeeee')
-        # print(list(patients.values())[-1])
-        # print('???')
 
-        # patient = list(patients.values())[-5]
-        # image_1 = patient['picture']
 
-        # other_image = face_recognition.load_image_file('{}'.format(image_1))
-        # other_encoding = face_recognition.face_encodings(other_image)[0]
-
-        # print(other_encoding)
-
+        match_pk_list = []
         results = face_recognition.compare_faces(encode_list, encoding, 0.5)
         count = 0
-        for i in range(len(results)):
-            if results[i]:
+        index = 0
+
+        print('len results ', results)
+        while count < 5 and index < len(results):
+            print('this one ...', index)
+            if results[index]:
                 count += 1
-                print('this is the guy ', who_list[i])
-        print('num matched ', count)
+                match_pk_list.append(potential_pk_list[index])
+            index += 1
 
-        # try:
-        #     img = open("../Sabai-Backend/{0}".format(image),'r+b')
-        #     # img = open("../final2018/kek.jpeg", 'rb')
-        #     print('photo success')
-        # except IOError:
-        #     img = None
-        #     print("Error in opening image")
+        filteredPatients = Patient.objects.filter(pk__in=match_pk_list)
+        response = serializers.serialize('json', filteredPatients)
 
-        return JsonResponse({
-            "message": 'success'
-        }, status = 400)
+        return HttpResponse(response, content_type="application/json")
     except Exception as e:
         print('this is the error ', e)
         
@@ -190,21 +170,39 @@ def create_new(request):
         complete_file_name = '{}.jpeg'.format(file_name)
 
         request.FILES['picture'] = ContentFile(decoded_file, name=complete_file_name)
-        print('this is the final product ', request.FILES)
+        image = ContentFile(decoded_file, name='temp.jpeg')
 
+        known_image = face_recognition.load_image_file(image)
+        encoding = face_recognition.face_encodings(known_image)
+        if len(encoding) == 0:
+            return JsonResponse({"error": "Face not found"}, status=200)
+
+        encoding_enriched = []
+        for num in encoding[0]:
+            encoding_enriched.append(num.item())
+        
+        data['face_encodings'] = encoding_enriched
+        print('final product ', request.FILES)
 
         form  = PatientForm(data, request.FILES)
+        print()
+        print('=====')
+        print('form here ', form)
+        print('=====')
         # form = PatientForm(request.POST, request.FILES)
-        print('this is form homie ', form)
+        # print('this is form homie ', form)
         if form.is_valid():
             patient = form.save(commit=False)
             patient.save()
             response = serializers.serialize("json", [patient, ])
             return HttpResponse(response, content_type="application/json")
         else:
+            print('look here ', form.errors)
             return JsonResponse(form.errors, status=400)
         return JsonResponse({}, status=500)
     except DataError as e:
+        print()
+        print('and this is your error ', e)
         return JsonResponse({"message": str(e)}, status=400)
 
 

@@ -18,7 +18,7 @@ class Patient(models.Model):
     date_of_birth = models.DateField(default=timezone.now)
     drug_allergy = models.TextField(default="None")
     parent = models.IntegerField(blank=True, null=True)
-    face_encodings = models.CharField(max_length=3000, blank=True, null=True)
+    face_encodings = ArrayField(models.FloatField(), blank=True, null=True)
     picture = models.ImageField(upload_to='static/images', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)

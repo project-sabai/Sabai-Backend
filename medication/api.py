@@ -97,3 +97,35 @@ def update_details(request):
         return JsonResponse({
             "message": str(e)
         }, status = 400)
+
+@api_view(['PATCH'])
+def update_quantity(request):
+    try:
+        # finding row to update
+        sort_params = request.query_params.dict()
+        print('sort params ', sort_params)
+        medication = Medication.objects.filter(**sort_params)
+        print('tis the medication ', medication.values()[0]['quantity'])
+
+        current_quantity = medication.values()[0]['quantity']
+
+        # updating row and saving changes to DB
+        data = json.loads(request.body.decode('utf-8'))
+        quantity_deducted = data['quantityChange']
+        updated_quantity = current_quantity - quantity_deducted
+
+        updateData = {
+            'quantity': updated_quantity
+        }
+
+        medication.update(**updateData)
+
+        return JsonResponse({
+            "message": "success"
+        }, status = 200)
+
+    except Exception as e:
+        print('error here ', e)
+        return JsonResponse({
+            "message": str(e)
+        }, status = 400)

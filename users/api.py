@@ -20,20 +20,41 @@ from medication.forms import MedicationForm
 # Updated
 # Delete
 
+# @api_view(['POST'])
+# @csrf_exempt
+# def create_new(request):
+#     try:
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         title = request.POST['title']
+#         name = request.POST['name']
+
+#         print('checkpoint: can get information')
+
+#         user = User.objects.create_user(username, None, password)
+#         user.first_name = title
+#         user.last_name = name
+
+#         user.save()
+
+#         return JsonResponse({"message": 'success'}, status=200)
+#     except Exception as e:
+#         print('error is ', e)
+#         return JsonResponse({"message": str(e)}, status=400)
+
 @api_view(['POST'])
 @csrf_exempt
 def create_new(request):
     try:
-        username = request.POST['username']
-        password = request.POST['password']
-        title = request.POST['title']
-        name = request.POST['name']
-
-        print('checkpoint: can get information')
+        data = json.loads(request.body.decode('utf-8'))
+        username = data['username']
+        password = data['password']
+        first_name = data['first_name']
+        last_name = data['last_name']
 
         user = User.objects.create_user(username, None, password)
-        user.first_name = title
-        user.last_name = name
+        user.first_name = first_name
+        user.last_name = last_name
 
         user.save()
 

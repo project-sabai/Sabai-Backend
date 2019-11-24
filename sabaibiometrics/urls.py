@@ -79,6 +79,7 @@ urlpatterns = [
     path('medication/new', medication.create_new, name='create_new'),
     path('medication/get', medication.get_details, name='get_details'),
     path('medication/update', medication.update_details, name='update_details'),
+    path('medication/quantity', medication.update_quantity, name='update_quantity'),
 
     # User
     path('user/new', users.create_new, name='create_new'),
