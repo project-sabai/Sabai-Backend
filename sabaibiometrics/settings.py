@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'clinicmodels',
     'login',
+    'sslserver'
 ]
 
 MIDDLEWARE = [
