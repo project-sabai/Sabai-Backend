@@ -30,7 +30,6 @@ def create_new(request):
         print(form.errors)
         if form.is_valid():
             medication = form.save(commit=False)
-            print('this is medication ', medication)
             medication.save()
             response = serializers.serialize("json", [medication])
             return HttpResponse(response, content_type="application/json")
@@ -44,7 +43,6 @@ def create_new(request):
 @csrf_exempt
 def migrate(request):
     try:
-        print(request.POST)
         form = MedicationForm(request.POST)
         print('form is valid? ', form.is_valid())
         print(form.errors)
@@ -78,14 +76,11 @@ def update_details(request):
     try:
         # finding row to update
         sort_params = request.query_params.dict()
-        print('sort params ', sort_params)
         medication = Medication.objects.filter(**sort_params)
-        print('tis the medication ', medication)
 
         # updating row and saving changes to DB
         data = json.loads(request.body.decode('utf-8'))
 
-        print(data)
         medication.update(**data)
 
         return JsonResponse({
@@ -103,9 +98,7 @@ def update_quantity(request):
     try:
         # finding row to update
         sort_params = request.query_params.dict()
-        print('sort params ', sort_params)
         medication = Medication.objects.filter(**sort_params)
-        print('tis the medication ', medication.values()[0]['quantity'])
 
         current_quantity = medication.values()[0]['quantity']
 

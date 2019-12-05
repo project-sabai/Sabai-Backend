@@ -8,7 +8,7 @@ class Patient(models.Model):
     class Meta:
         db_table = "patients"
 
-    id = models.IntegerField(primary_key=True)
+    # id = models.IntegerField(primary_key=True)
     village_prefix = models.CharField(max_length=5)
     name = models.CharField(max_length=255)
     local_name = models.CharField(max_length=255, blank=True, null=True)
@@ -27,7 +27,7 @@ class Visit(models.Model):
     class Meta:
         db_table = "visits"
 
-    id = models.IntegerField(primary_key=True)
+    # id = models.IntegerField(primary_key=True)
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, blank=True, null=True)
     # date = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=100)
@@ -82,7 +82,7 @@ class Consult(models.Model):
     class Meta:
         db_table = "consults"
 
-    id = models.IntegerField(primary_key=True)
+    # id = models.IntegerField(primary_key=True)
     visit = models.ForeignKey(Visit, on_delete=models.SET_NULL, null=True)
     type = models.CharField(max_length=255)
     sub_type = models.CharField(max_length=255, blank=True, null=True)

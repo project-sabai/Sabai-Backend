@@ -21,14 +21,9 @@ from order.forms import OrderForm
 def create_new(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        print('data ', data)
-        print('gap ,')
         order_form = OrderForm(data)
 
         if order_form.is_valid():
-            # print('this is the consult_form ', consult_form)
-            # consult_form.consult_date = request.POST['consult_date']
-            # print('doneso ', consult_form )
             order = order_form.save()
             response = serializers.serialize("json", [order, ])
             
@@ -48,14 +43,9 @@ def create_new(request):
 def migrate(request):
     try:
         data = request.POST.copy()
-        print('data ', data)
-        print('gap ,')
         order_form = OrderForm(data)
 
         if order_form.is_valid():
-            # print('this is the consult_form ', consult_form)
-            # consult_form.consult_date = request.POST['consult_date']
-            # print('doneso ', consult_form )
             order = order_form.save()
             response = serializers.serialize("json", [order, ])
             

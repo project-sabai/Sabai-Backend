@@ -17,14 +17,9 @@ import json
 def create_new(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        print('data ', data)
-        print('gap ,')
         consult_form = ConsultForm(data)
 
         if consult_form.is_valid():
-            # print('this is the consult_form ', consult_form)
-            # consult_form.consult_date = request.POST['consult_date']
-            # print('doneso ', consult_form )
             consult = consult_form.save()
             response = serializers.serialize("json", [consult, ])
             
@@ -44,14 +39,9 @@ def create_new(request):
 def migrate(request):
     try:
         data = request.POST.copy()
-        print('data ', data)
-        print('gap ,')
         consult_form = ConsultForm(data)
 
         if consult_form.is_valid():
-            # print('this is the consult_form ', consult_form)
-            # consult_form.consult_date = request.POST['consult_date']
-            # print('doneso ', consult_form )
             consult = consult_form.save()
             response = serializers.serialize("json", [consult, ])
             

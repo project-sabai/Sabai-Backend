@@ -32,8 +32,6 @@ import patient.api as patient
 from django.conf.urls.static import static
 from django.conf import settings
 
-print('lookee here ', settings.MEDIA_ROOT)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login.HelloView.as_view()),

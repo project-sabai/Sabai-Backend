@@ -37,7 +37,6 @@ def get_details(request):
         # convert to base64
         # set base64 as new value of picture
         
-        print('this is patients ', patients.values())
         response = serializers.serialize('json', patients)
 
         
@@ -92,7 +91,6 @@ def find_by_scan(request):
 
         print('len results ', results)
         while count < 5 and index < len(results):
-            print('this one ...', index)
             if results[index]:
                 count += 1
                 match_pk_list.append(potential_pk_list[index])
@@ -151,14 +149,9 @@ def create_new(request):
     
     
     try:
-        # print('look here fam ', request.POST['id'])
-        print('post ', request)
-        print('post data ', json.loads(request.body.decode('utf-8')))
-        print('post files ', request.FILES)
 
         data = json.loads(request.body.decode('utf-8'))
         image_data  = data['imageDetails']
-        # print('image data ', image_data)
 
         header, base64Data = image_data.split(';base64,')
 
@@ -183,15 +176,8 @@ def create_new(request):
             encoding_enriched.append(num.item())
         
         data['face_encodings'] = encoding_enriched
-        print('final product ', request.FILES)
 
         form  = PatientForm(data, request.FILES)
-        print()
-        print('=====')
-        print('form here ', form)
-        print('=====')
-        # form = PatientForm(request.POST, request.FILES)
-        # print('this is form homie ', form)
         if form.is_valid():
             patient = form.save(commit=False)
             patient.save()
@@ -217,10 +203,6 @@ def migrate(request):
     
     
     try:
-        print('look here fam ', request.POST['id'])
-        print('post ', request)
-        # print('post data ', json.loads(request.body.decode('utf-8')))
-        print('post files ', request.FILES)
 
         data = request.POST.copy()
         image = copy.deepcopy(request.FILES['picture'])
@@ -238,12 +220,6 @@ def migrate(request):
         data['face_encodings'] = encoding_enriched
 
         form  = PatientForm(data, request.FILES)
-        print()
-        print('=====')
-        print('form here ', form)
-        print('=====')
-        # form = PatientForm(request.POST, request.FILES)
-        # print('this is form homie ', form)
         if form.is_valid():
             patient = form.save(commit=False)
             patient.save()

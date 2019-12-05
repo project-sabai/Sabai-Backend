@@ -22,8 +22,6 @@ def create_new(request):
         # error will be raised if it does not exist
         patient = Patient.objects.get(pk=patient_id)
 
-        print('this is the data ', data)
-
         # if len(consultations) == 0:
         #     return JsonResponse({"message": "Patient should have at least one consultation"}, status=400)
 
@@ -56,8 +54,6 @@ def migrate(request):
         # check if patient exists
         # error will be raised if it does not exist
         patient = Patient.objects.get(pk=patient_id)
-
-        print('this is the data ', data)
 
         # if len(consultations) == 0:
         #     return JsonResponse({"message": "Patient should have at least one consultation"}, status=400)
