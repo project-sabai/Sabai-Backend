@@ -6,6 +6,7 @@ class ConsultForm(forms.ModelForm):
     class Meta:
         model = Consult
         fields = [ 
+            'id',
             'visit', 
             'type', 
             'doctor', 
@@ -18,5 +19,6 @@ class ConsultForm(forms.ModelForm):
             'f',
             'others',
             'referred_for',
-            'sub_type'
+            'sub_type',
+            'created_at'
             ]

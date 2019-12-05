@@ -39,6 +39,33 @@ def create_new(request):
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
+@api_view(['POST'])
+@csrf_exempt
+def migrate(request):
+    try:
+        data = request.POST.copy()
+        print('data ', data)
+        print('gap ,')
+        consult_form = ConsultForm(data)
+
+        if consult_form.is_valid():
+            # print('this is the consult_form ', consult_form)
+            # consult_form.consult_date = request.POST['consult_date']
+            # print('doneso ', consult_form )
+            consult = consult_form.save()
+            response = serializers.serialize("json", [consult, ])
+            
+            return HttpResponse(response, content_type='application/json')
+        else:
+            print('failing')
+            print(consult_form.errors)
+            return JsonResponse({"message": consult_form.errors}, status=400)
+    except ObjectDoesNotExist as e:
+        print('this is the error ', e)
+        return JsonResponse({"message": str(e)}, status=404)
+    except DataError as e:
+        return JsonResponse({"message": str(e)}, status=400)
+
 @api_view(['GET'])
 def get_details(request):
     try:

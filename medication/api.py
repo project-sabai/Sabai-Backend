@@ -40,24 +40,24 @@ def create_new(request):
         return JsonResponse({"message": str(e)}, status=400)
 
 
-# @api_view(['POST'])
-# @csrf_exempt
-# def create_new(request):
-#     try:
-#         print(request.POST)
-#         form = MedicationForm(request.POST)
-#         print('form is valid? ', form.is_valid())
-#         print(form.errors)
-#         if form.is_valid():
-#             medication = form.save(commit=False)
-#             print('this is medication ', medication)
-#             medication.save()
-#             response = serializers.serialize("json", [medication])
-#             return HttpResponse(response, content_type="application/json")
-#         else:
-#             return JsonResponse(form.errors, status=400)
-#     except DataError as e:
-#         return JsonResponse({"message": str(e)}, status=400)
+@api_view(['POST'])
+@csrf_exempt
+def migrate(request):
+    try:
+        print(request.POST)
+        form = MedicationForm(request.POST)
+        print('form is valid? ', form.is_valid())
+        print(form.errors)
+        if form.is_valid():
+            medication = form.save(commit=False)
+            print('this is medication ', medication)
+            medication.save()
+            response = serializers.serialize("json", [medication])
+            return HttpResponse(response, content_type="application/json")
+        else:
+            return JsonResponse(form.errors, status=400)
+    except DataError as e:
+        return JsonResponse({"message": str(e)}, status=400)
 
 @api_view(['GET'])
 def get_details(request):

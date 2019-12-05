@@ -48,16 +48,19 @@ urlpatterns = [
     path('patients/get', patient.get_details, name='get_details'),
     path('patients/update', patient.update_details, name='update_details'),
     path('patients/find_by_scan', patient.find_by_scan, name='find_by_scan'),
+    path('patients/migrate', patient.migrate, name='migrate'),
 
     # Visit Creation/Retrieval Endpoints
     path('visit/new', visit.create_new, name='create_new'),
     path('visit/get', visit.get_details, name='get_details'),
     path('visit/update', visit.update_details, name='update_details'),
+    path('visit/migrate', visit.migrate, name='migrate'),
 
     # Vitals Creation/Retrieval Endpoints
     path('medicalvitals/new', medicalvitals.create_new, name='create_new'),
     path('medicalvitals/get', medicalvitals.get_details, name='get_details'),
     path('medicalvitals/update', medicalvitals.update_details, name='update_details'),
+    path('medicalvitals/migrate', medicalvitals.migrate, name='migrate'),
 
     # Visit Creation/Retrieval Endpoints
     path('dentalvitals/new', dentalvitals.create_new, name='create_new'),
@@ -74,16 +77,19 @@ urlpatterns = [
     # path('consulttype/new', consult.create_new_consult_type, name='create_new_consult_type'),
     path('consults/new', consult.create_new, name='create_new'),
     path('consults/get', consult.get_details, name='get_details'),
+    path('consults/migrate', consult.migrate, name='migrate'),
 
     # Medication
     path('medication/new', medication.create_new, name='create_new'),
     path('medication/get', medication.get_details, name='get_details'),
+    path('medication/migrate', medication.migrate, name='migrate'),
     path('medication/update', medication.update_details, name='update_details'),
     path('medication/quantity', medication.update_quantity, name='update_quantity'),
 
     # User
     path('user/new', users.create_new, name='create_new'),
     path('user/get', users.get_details, name='get_details'),
+    path('user/migrate', users.migrate, name='migrate'),
 
     # Addendum
     path('addendum/new', addendum.create_new, name='create_new'),
@@ -91,6 +97,7 @@ urlpatterns = [
     # Order
     path('order/new', order.create_new, name='create_new'),
     path('order/get', order.get_details, name='get_details'),
-    path('order/update', order.update_details, name='update_details')
+    path('order/update', order.update_details, name='update_details'),
+    path('order/migrate', order.migrate, name='migrate')
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

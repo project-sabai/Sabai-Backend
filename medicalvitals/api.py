@@ -27,6 +27,24 @@ def create_new(request):
     except DataError as e:
         return JsonResponse({"message": str(e)}, status=400)
 
+@api_view(['POST'])
+@csrf_exempt
+def migrate(request):
+    try:
+        data = request.POST.copy()
+        # form = DentalVitalsForm(request.POST)
+        form = MedicalVitalsForm(data)
+        if form.is_valid():
+            vitals = form.save(commit=False)
+            vitals.save()
+            response = serializers.serialize("json", [vitals, ])
+            return HttpResponse(response, content_type="application/json")
+        else:
+            print(form.errors)
+            return JsonResponse(form.errors, status=400)
+    except DataError as e:
+        return JsonResponse({"message": str(e)}, status=400)
+
 @api_view(['GET'])
 def get_details(request):
     try:

@@ -18,6 +18,7 @@ import json
 import base64
 import uuid
 import face_recognition
+import copy
 
 """
 Handles all operations regarding the retrieval, update of patient models.
@@ -183,6 +184,58 @@ def create_new(request):
         
         data['face_encodings'] = encoding_enriched
         print('final product ', request.FILES)
+
+        form  = PatientForm(data, request.FILES)
+        print()
+        print('=====')
+        print('form here ', form)
+        print('=====')
+        # form = PatientForm(request.POST, request.FILES)
+        # print('this is form homie ', form)
+        if form.is_valid():
+            patient = form.save(commit=False)
+            patient.save()
+            response = serializers.serialize("json", [patient, ])
+            return HttpResponse(response, content_type="application/json")
+        else:
+            print('look here ', form.errors)
+            return JsonResponse(form.errors, status=400)
+        return JsonResponse({}, status=500)
+    except DataError as e:
+        print()
+        print('and this is your error ', e)
+        return JsonResponse({"message": str(e)}, status=400)
+
+@api_view(['POST'])
+@csrf_exempt
+def migrate(request):
+    '''
+    POST request with multipart form to create a new patient
+    :param request: POST request with the required parameters. Date parameters are accepted in the format 1995-03-30.
+    :return: Http Response with corresponding status code
+    '''
+    
+    
+    try:
+        print('look here fam ', request.POST['id'])
+        print('post ', request)
+        # print('post data ', json.loads(request.body.decode('utf-8')))
+        print('post files ', request.FILES)
+
+        data = request.POST.copy()
+        image = copy.deepcopy(request.FILES['picture'])
+
+        known_image = face_recognition.load_image_file(image)
+        encoding = face_recognition.face_encodings(known_image)
+        # if len(encoding) == 0:
+        #     return JsonResponse({"error": "Face not found"}, status=200)
+
+        encoding_enriched = []
+        if len(encoding) > 0:
+            for num in encoding[0]:
+                encoding_enriched.append(num.item())
+        
+        data['face_encodings'] = encoding_enriched
 
         form  = PatientForm(data, request.FILES)
         print()
