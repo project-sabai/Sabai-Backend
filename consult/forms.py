@@ -19,6 +19,5 @@ class ConsultForm(forms.ModelForm):
             'f',
             'others',
             'referred_for',
-            'sub_type',
-            'created_at'
+            'sub_type'
             ]
